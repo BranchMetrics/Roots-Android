@@ -27,8 +27,7 @@
 
         <activity android:name=".DeepLinkTestActivity" android:screenOrientation="portrait">
             <meta-data android:name="al:android:url" android:value="myscheme://user/{user_id}"/>
-            <!--<meta-data android:name="al:web:url" android:value="https://my_awesome_site.com/user/{user_id}"/>-->
-
+            <meta-data android:name="al:web:url" android:value="https://my_awesome_site.com/user/{user_id}"/>
         </activity>
     </application>
 

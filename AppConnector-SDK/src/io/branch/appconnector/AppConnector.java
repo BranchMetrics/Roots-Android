@@ -21,6 +21,7 @@ public class AppConnector {
     /* URL set for opening the app */
     private final String url_;
     private final Context context_;
+    private boolean alwaysFallbackToWebUrl_;
     private IAppConnectionEvents connectionEventsCallback_;
 
     /**
@@ -33,10 +34,31 @@ public class AppConnector {
     public AppConnector(Context context, String url) {
         context_ = context;
         url_ = url;
+        alwaysFallbackToWebUrl_ = false;
     }
+
 
     //-----------------Launcher side functionalities---------------------------------------------------//
 
+    /**
+     * <p>
+     *     Setting this option will open the app link web url always when there is no application installed.
+     *     Otherwise the default behaviour is try to open the play store when there is no application installed.
+     * </p>
+     * @param alwaysFallbackToWebUrl true to enable always fallback to web url
+     * @return {@link AppConnector} instance for method chaining
+     */
+    public AppConnector setAlwaysFallbackToWebUrl(boolean alwaysFallbackToWebUrl) {
+        alwaysFallbackToWebUrl_ = alwaysFallbackToWebUrl;
+        return this;
+    }
+
+    /**
+     * Sets an instance of {@link io.branch.appconnector.AppConnector.IAppConnectionEvents } to get called back with
+     * App connect events
+     * @param appConnectionEvents {@link io.branch.appconnector.AppConnector.IAppConnectionEvents} instance
+     * @return {@link AppConnector} instance for method chaining
+     */
     public AppConnector setAppConnectionEventsCallback(IAppConnectionEvents appConnectionEvents) {
         connectionEventsCallback_ = appConnectionEvents;
         return this;
@@ -68,6 +90,7 @@ public class AppConnector {
         @Override
         public void onAppLaunchConfigAvailable(AppLaunchConfig appLaunchConfig, AppConnectionExtractor.CONN_EXTRACT_ERR err) {
             if (err == AppConnectionExtractor.CONN_EXTRACT_ERR.NO_ERROR) {
+                appLaunchConfig.setAlwaysOpenWebUrl(alwaysFallbackToWebUrl_);
                 AppRouter.handleAppRouting(context_, appLaunchConfig, connectionEventsCallback_);
             }
         }

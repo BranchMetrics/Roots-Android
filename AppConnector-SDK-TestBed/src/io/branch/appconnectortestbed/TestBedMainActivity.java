@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.URLUtil;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -27,7 +28,7 @@ public class TestBedMainActivity extends Activity implements AppConnector.IAppCo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_bed_main);
         final TextView utlTxtView = (TextView) findViewById(R.id.app_url_txt);
-        utlTxtView.setText("Enter the url to open app");
+
 
         findViewById(R.id.app_nav_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,7 +38,8 @@ public class TestBedMainActivity extends Activity implements AppConnector.IAppCo
                 String navUrl = utlTxtView.getText().toString();
 
                 AppConnector appConnector = new AppConnector(TestBedMainActivity.this, navUrl)
-                        .setAppConnectionEventsCallback(TestBedMainActivity.this);
+                        .setAppConnectionEventsCallback(TestBedMainActivity.this)
+                        .setAlwaysFallbackToWebUrl(((CheckBox)findViewById(R.id.web_fallback_chkbx)).isChecked());
 
                 if (URLUtil.isValidUrl(navUrl)) {
                     appConnector.connect(); // Open the using the URL entered

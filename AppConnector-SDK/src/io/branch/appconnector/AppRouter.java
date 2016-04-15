@@ -75,7 +75,11 @@ class AppRouter {
     }
 
     private static void handleAppNotInstalled(Context context, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) throws UnsupportedEncodingException {
-        openPlayStore(context, appLaunchConfig, callback);
+        if(appLaunchConfig.isAlwaysOpenWebUrl()){
+            openFallbackUrl(context,appLaunchConfig,callback);
+        }else {
+            openPlayStore(context, appLaunchConfig, callback);
+        }
     }
 
     private static void openPlayStore(Context context, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) {

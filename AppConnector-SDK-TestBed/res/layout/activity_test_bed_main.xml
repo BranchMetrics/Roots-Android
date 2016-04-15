@@ -28,6 +28,14 @@
           android:layout_marginTop="5dp"
           android:text="@string/navigate_btn_name"/>
 
+      <CheckBox
+          android:id="@+id/web_fallback_chkbx"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:padding="5dp"
+          android:layout_marginTop="5dp"
+          android:text="@string/fallback_web_button"/>
+
   </LinearLayout>
 
     <ProgressBar

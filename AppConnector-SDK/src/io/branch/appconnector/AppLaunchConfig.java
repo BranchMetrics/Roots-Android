@@ -35,6 +35,7 @@ class AppLaunchConfig {
     private String targetAppLaunchParams_;
     private String targetAppPackageName_;
     private String targetAppFallbackUrl_;
+    private boolean alwaysOpenWebUrl_ =  false;
 
 
     /**
@@ -119,6 +120,21 @@ class AppLaunchConfig {
         return targetAppFallbackUrl_;
     }
 
+    /**
+     * Specifies if the fall back is set to web url always
+     * @return {@link Boolean} with value true if set to open the web url always
+     */
+    public boolean isAlwaysOpenWebUrl() {
+        return alwaysOpenWebUrl_;
+    }
+
+    /**
+     * Specifies if the fall back is set to web url always
+     * @param alwaysOpenWebUrl True to set always fallback to we url
+     */
+    public void setAlwaysOpenWebUrl(boolean alwaysOpenWebUrl) {
+        this.alwaysOpenWebUrl_ = alwaysOpenWebUrl;
+    }
 
     /**
      * Create an {@link AppLaunchConfig} instance  form App Link meta data
