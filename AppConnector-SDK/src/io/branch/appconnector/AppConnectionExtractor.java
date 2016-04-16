@@ -46,8 +46,9 @@ class AppConnectionExtractor {
     /**
      * Method for extracting the app link data for a  given url. App link data is scraped from the URL
      * and an {@link AppLaunchConfig} object is created and returned with the callback.
+     *
      * @param context  Application context
-     * @param url   The Url to open the app
+     * @param url      The Url to open the app
      * @param callback A {@link io.branch.appconnector.AppConnectionExtractor.IAppConnectionExtractorEvents} object for result callback
      */
     public static void scrapeAppLinkTags(final Context context, final String url, final IAppConnectionExtractorEvents callback) {
@@ -61,6 +62,7 @@ class AppConnectionExtractor {
                 @JavascriptInterface
                 public void showHTML(String html) throws JSONException {
                     AppLaunchConfig appLaunchConfig = new AppLaunchConfig(new JSONArray(html), url);
+
                     if (callback != null) {
                         callback.onAppLaunchConfigAvailable(appLaunchConfig, CONN_EXTRACT_ERR.NO_ERROR);
                     }
@@ -87,8 +89,9 @@ class AppConnectionExtractor {
     public interface IAppConnectionExtractorEvents {
         /**
          * Called when AppLaunch config is created for a given url
+         *
          * @param appLaunchConfig {@link AppLaunchConfig} instance for teh given url
-         * @param err {@link io.branch.appconnector.AppConnectionExtractor.CONN_EXTRACT_ERR} representing any error while creating app launch config
+         * @param err             {@link io.branch.appconnector.AppConnectionExtractor.CONN_EXTRACT_ERR} representing any error while creating app launch config
          */
         void onAppLaunchConfigAvailable(AppLaunchConfig appLaunchConfig, CONN_EXTRACT_ERR err);
     }

@@ -5,5 +5,6 @@
     <string name="navigate_btn_name">Navigate To App ></string>
     <string name="navigate_url_hint">Enter URL to launch app</string>
     <string name="fallback_web_button">Always show web url if not installed</string>
+    <string name="add_download_button">Add download app button on fallback url</string>
 
 </resources>

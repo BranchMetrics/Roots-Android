@@ -35,7 +35,8 @@ class AppLaunchConfig {
     private String targetAppLaunchParams_;
     private String targetAppPackageName_;
     private String targetAppFallbackUrl_;
-    private boolean alwaysOpenWebUrl_ =  false;
+    private boolean alwaysOpenWebUrl_ = false;
+    private boolean addDownloadAppBtn_ = false;
 
 
     /**
@@ -79,6 +80,7 @@ class AppLaunchConfig {
 
     /**
      * get the path for the uri to launch the target app
+     *
      * @return{@link String} with value for the target app uri path
      */
     public String getTargetAppLaunchPath() {
@@ -87,6 +89,7 @@ class AppLaunchConfig {
 
     /**
      * Get any port for teh uri to launch the target app
+     *
      * @return {@link Integer} with value for the port. Return PORT_UNDEFINED if there is no valid port
      */
     public int getTargetAppLaunchPort() {
@@ -122,6 +125,7 @@ class AppLaunchConfig {
 
     /**
      * Specifies if the fall back is set to web url always
+     *
      * @return {@link Boolean} with value true if set to open the web url always
      */
     public boolean isAlwaysOpenWebUrl() {
@@ -130,10 +134,29 @@ class AppLaunchConfig {
 
     /**
      * Specifies if the fall back is set to web url always
+     *
      * @param alwaysOpenWebUrl True to set always fallback to we url
      */
     public void setAlwaysOpenWebUrl(boolean alwaysOpenWebUrl) {
         this.alwaysOpenWebUrl_ = alwaysOpenWebUrl;
+    }
+
+    /**
+     * Specifies whether to add a download app button with the fall back url
+     *
+     * @param addDownloadAppBtn True to a download app button
+     */
+    public void setAddDownloadAppBtn(boolean addDownloadAppBtn) {
+        addDownloadAppBtn_ = addDownloadAppBtn;
+    }
+
+    /**
+     * Check if download app button is opted
+     *
+     * @return True if download app button is opted
+     */
+    public boolean isAddDownloadAppBtn() {
+        return addDownloadAppBtn_;
     }
 
     /**

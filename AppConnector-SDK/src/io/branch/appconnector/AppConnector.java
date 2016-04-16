@@ -20,9 +20,10 @@ import java.security.PrivateKey;
 public class AppConnector {
     /* URL set for opening the app */
     private final String url_;
-    private final Context context_;
+    private final Activity activity_;
     private boolean alwaysFallbackToWebUrl_;
     private IAppConnectionEvents connectionEventsCallback_;
+    private boolean addDownloadAppButton_;
 
     /**
      * <p>
@@ -31,10 +32,11 @@ public class AppConnector {
      *
      * @param url {@link String} with value for the URL to open
      */
-    public AppConnector(Context context, String url) {
-        context_ = context;
+    public AppConnector(Activity activity, String url) {
+        activity_ = activity;
         url_ = url;
         alwaysFallbackToWebUrl_ = false;
+        addDownloadAppButton_ = false;
     }
 
 
@@ -64,34 +66,50 @@ public class AppConnector {
         return this;
     }
 
-
+    /**
+     * Adds a button to download the app on showing the fallback url
+     * @param addDownloadAppButton true to add a download app button to the fallback url
+     * @return {@link AppConnector} instance for method chaining
+     */
+    public AppConnector addDownloadAppButtonOnFallbackView(boolean addDownloadAppButton) {
+        addDownloadAppButton_ = addDownloadAppButton;
+        return this;
+    }
 
     /**
      * <p>
-     * Open the app if there is a matching app installed for the given url. Opens a fallback url if app is not installed.
+     *      Open the app if there is a matching app installed for the given url. Opens a fallback url if app is not installed.
      * </p>
-     *
-     * @return {@link Boolean} with value true if app is opened else false.
      */
-    public boolean connect() {
-        boolean isAppOpened = false;
-        AppConnectionExtractor.scrapeAppLinkTags(context_, url_, new AppConnExtractionEvents());
-        return isAppOpened;
+    public void connect() {
+        AppConnectionExtractor.scrapeAppLinkTags(activity_, url_, new AppConnExtractionEvents());
     }
 
-    public boolean debugConnect(String url, JSONArray applinkDebugMetadata) {
-        boolean isAppOpened = false;
+    /**
+     * <p>
+     *     Method to debug app connector with debug app link data.
+     * </p>
+     * @param url                   {@link String} URL to open
+     * @param applinkDebugMetadata  {@link JSONArray} with debug app link metadata
+     */
+    public void debugConnect(String url, JSONArray applinkDebugMetadata) {
         AppLaunchConfig appLaunchConfig = new AppLaunchConfig(applinkDebugMetadata, url);
-        AppRouter.handleAppRouting(context_, appLaunchConfig, connectionEventsCallback_);
-        return isAppOpened;
+        AppRouter.handleAppRouting(activity_, appLaunchConfig, connectionEventsCallback_);
     }
 
     private class AppConnExtractionEvents implements AppConnectionExtractor.IAppConnectionExtractorEvents {
         @Override
-        public void onAppLaunchConfigAvailable(AppLaunchConfig appLaunchConfig, AppConnectionExtractor.CONN_EXTRACT_ERR err) {
+        public void onAppLaunchConfigAvailable(final AppLaunchConfig appLaunchConfig, AppConnectionExtractor.CONN_EXTRACT_ERR err) {
             if (err == AppConnectionExtractor.CONN_EXTRACT_ERR.NO_ERROR) {
                 appLaunchConfig.setAlwaysOpenWebUrl(alwaysFallbackToWebUrl_);
-                AppRouter.handleAppRouting(context_, appLaunchConfig, connectionEventsCallback_);
+                appLaunchConfig.setAddDownloadAppBtn(addDownloadAppButton_);
+                activity_.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppRouter.handleAppRouting(activity_, appLaunchConfig, connectionEventsCallback_);
+                    }
+                });
+
             }
         }
     }

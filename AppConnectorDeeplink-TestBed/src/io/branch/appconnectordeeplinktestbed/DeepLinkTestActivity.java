@@ -4,6 +4,8 @@ package io.branch.appconnectordeeplinktestbed;
         import android.os.Bundle;
         import android.widget.Toast;
 
+        import io.branch.appconnector.AppConnector;
+
 /**
  * <p>
  * Activity for testing In-App-Routing with AppConnector SDK. The URL filtering rule and
