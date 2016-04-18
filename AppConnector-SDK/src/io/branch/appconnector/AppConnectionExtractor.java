@@ -1,7 +1,10 @@
 package io.branch.appconnector;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -56,6 +59,12 @@ class AppConnectionExtractor {
             final WebView browser = new WebView(context);
             browser.getSettings().setJavaScriptEnabled(true);
             browser.getSettings().setUserAgentString(USER_AGENT_STRING);
+            browser.getSettings().setBlockNetworkImage(true);
+            browser.getSettings().setBlockNetworkLoads(true);
+            browser.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+            browser.getSettings().setLoadsImagesAutomatically(false);
+            browser.getSettings().setAllowContentAccess(false);
+
 
             browser.addJavascriptInterface(new Object() {
                 @SuppressWarnings("unused")
@@ -71,7 +80,14 @@ class AppConnectionExtractor {
 
             browser.setWebViewClient(new WebViewClient() {
                 @Override
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    Log.d("WebViewTest", "onPageStarted " + url);
+                    super.onPageStarted(view, url, favicon);
+                }
+
+                @Override
                 public void onPageFinished(WebView view, String url) {
+                    Log.d("WebViewTest", "onPageFinished " + url);
                     browser.loadUrl(METADATA_READ_JAVASCRIPT);
                 }
             });
