@@ -35,6 +35,10 @@ class DeeplinkRouter {
         Application.ActivityLifecycleCallbacks lifecycleCallbacks_ = new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
                 if (activityCnt_ == 0 && isActivityLaunchedByAppConnector(activity)) {
                     Intent intent = getAnyDeepLinkMatchIntent(activity);
                     if (intent != null) {
@@ -45,24 +49,21 @@ class DeeplinkRouter {
             }
 
             @Override
-            public void onActivityStarted(Activity activity) {}
-
-            @Override
             public void onActivityResumed(Activity activity) {}
 
             @Override
             public void onActivityPaused(Activity activity) {}
 
             @Override
-            public void onActivityStopped(Activity activity) {}
+            public void onActivityStopped(Activity activity) {
+                activityCnt_--;
+            }
 
             @Override
             public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
             @Override
-            public void onActivityDestroyed(Activity activity) {
-                activityCnt_--;
-            }
+            public void onActivityDestroyed(Activity activity) {}
         };
         application.registerActivityLifecycleCallbacks(lifecycleCallbacks_);
     }
