@@ -25,8 +25,8 @@ class AppConnectionExtractor {
         ERR_UNKNOWN
     }
 
-    private static final String USER_AGENT_STRING = "Chrome 41.0.2227.1";
-    //private static final String USER_AGENT_STRING = "Mozilla/5.0 (Linux; U; Android 4.0.3; de-ch; HTC Sensation Build/IML74K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
+    //private static final String USER_AGENT_STRING = "Chrome 41.0.2227.1";
+    private static final String DEFAULT_USER_AGENT_STRING = "Mozilla/5.0 (Linux; U; Android 4.0.3; de-ch; HTC Sensation Build/IML74K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
 
     private static final String METADATA_READ_JAVASCRIPT = "javascript:window.HTMLOUT.showHTML" +
             "((function() {" +
@@ -54,17 +54,19 @@ class AppConnectionExtractor {
      * @param url      The Url to open the app
      * @param callback A {@link io.branch.appconnector.AppConnectionExtractor.IAppConnectionExtractorEvents} object for result callback
      */
-    public static void scrapeAppLinkTags(final Context context, final String url, final IAppConnectionExtractorEvents callback) {
+    public static void scrapeAppLinkTags(final Context context, final String url, String browserAgentString, final IAppConnectionExtractorEvents callback) {
         try {
             final WebView browser = new WebView(context);
             browser.getSettings().setJavaScriptEnabled(true);
-            browser.getSettings().setUserAgentString(USER_AGENT_STRING);
             browser.getSettings().setBlockNetworkImage(true);
             browser.getSettings().setBlockNetworkLoads(true);
             browser.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
             browser.getSettings().setLoadsImagesAutomatically(false);
             browser.getSettings().setAllowContentAccess(false);
+            browser.getSettings().setDomStorageEnabled(true);
 
+            String agentString = browserAgentString == null ? DEFAULT_USER_AGENT_STRING : browserAgentString;
+            browser.getSettings().setUserAgentString(browserAgentString);
 
             browser.addJavascriptInterface(new Object() {
                 @SuppressWarnings("unused")

@@ -24,6 +24,7 @@ public class AppConnector {
     private boolean alwaysFallbackToWebUrl_;
     private IAppConnectionEvents connectionEventsCallback_;
     private boolean addDownloadAppButton_;
+    private String browserAgentString_ = null;
 
     /**
      * <p>
@@ -44,9 +45,10 @@ public class AppConnector {
 
     /**
      * <p>
-     *     Setting this option will open the app link web url always when there is no application installed.
-     *     Otherwise the default behaviour is try to open the play store when there is no application installed.
+     * Setting this option will open the app link web url always when there is no application installed.
+     * Otherwise the default behaviour is try to open the play store when there is no application installed.
      * </p>
+     *
      * @param alwaysFallbackToWebUrl true to enable always fallback to web url
      * @return {@link AppConnector} instance for method chaining
      */
@@ -58,6 +60,7 @@ public class AppConnector {
     /**
      * Sets an instance of {@link io.branch.appconnector.AppConnector.IAppConnectionEvents } to get called back with
      * App connect events
+     *
      * @param appConnectionEvents {@link io.branch.appconnector.AppConnector.IAppConnectionEvents} instance
      * @return {@link AppConnector} instance for method chaining
      */
@@ -68,6 +71,7 @@ public class AppConnector {
 
     /**
      * Adds a button to download the app on showing the fallback url
+     *
      * @param addDownloadAppButton true to add a download app button to the fallback url
      * @return {@link AppConnector} instance for method chaining
      */
@@ -77,20 +81,33 @@ public class AppConnector {
     }
 
     /**
+     * Sets an optional browser string to access and inspect the navigation url.
+     *
+     * @param browserAgentString {@link String} a fully qualified browser agent string
+     * @return {@link AppConnector} instance for method chaining
+     */
+    public AppConnector setBrowserAgent(String browserAgentString) {
+        browserAgentString_ = browserAgentString;
+        return this;
+    }
+
+
+    /**
      * <p>
-     *      Open the app if there is a matching app installed for the given url. Opens a fallback url if app is not installed.
+     * Open the app if there is a matching app installed for the given url. Opens a fallback url if app is not installed.
      * </p>
      */
     public void connect() {
-        AppConnectionExtractor.scrapeAppLinkTags(activity_, url_, new AppConnExtractionEvents());
+        AppConnectionExtractor.scrapeAppLinkTags(activity_, url_, browserAgentString_, new AppConnExtractionEvents());
     }
 
     /**
      * <p>
-     *     Method to debug app connector with debug app link data.
+     * Method to debug app connector with debug app link data.
      * </p>
-     * @param url                   {@link String} URL to open
-     * @param applinkDebugMetadata  {@link JSONArray} with debug app link metadata
+     *
+     * @param url                  {@link String} URL to open
+     * @param applinkDebugMetadata {@link JSONArray} with debug app link metadata
      */
     public void debugConnect(String url, JSONArray applinkDebugMetadata) {
         AppLaunchConfig appLaunchConfig = new AppLaunchConfig(applinkDebugMetadata, url);
@@ -147,30 +164,28 @@ public class AppConnector {
     }
 
 
-
     //---------------------- Receiver side functionalities-----------------------------------------------//
 
     /**
      * Check if the activity is launched by AppConnector SDK
+     *
      * @param activity Activity to check if it is launched by app connector
      * @return A {@link Boolean} whose value is set to true if the activity specified is launched by AppConnector SDK
      */
-    public static boolean isAppConnectorLaunched(Activity activity){
-       return  (DeeplinkRouter.isActivityLaunchedByDeepLinkRouter(activity)
-               || DeeplinkRouter.isActivityLaunchedByAppConnector(activity));
+    public static boolean isAppConnectorLaunched(Activity activity) {
+        return (DeeplinkRouter.isActivityLaunchedByDeepLinkRouter(activity)
+                || DeeplinkRouter.isActivityLaunchedByAppConnector(activity));
 
     }
 
     /**
      * Enables in app routing based on the app link filter added to activities. Should be called from application create event
+     *
      * @param application {@link Application} object
      */
-    public static void enableDeeplinkRouting(Application application){
+    public static void enableDeeplinkRouting(Application application) {
         new DeeplinkRouter().enable(application);
     }
-
-
-
 
 
 }
