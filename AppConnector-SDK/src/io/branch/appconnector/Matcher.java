@@ -13,6 +13,8 @@ import android.text.TextUtils;
  */
 class Matcher {
 
+    // AA: Can you add support for a wildcard path `*`, eg myapp://open/*, or myapp://*/profile
+
     public static boolean matchUriPattern(String actualUriString, String pattern) {
         String paramName = getParamNameFromUriPattern(pattern);
         String patternWithoutParam = pattern.replace("{" + paramName + "}", "").toLowerCase();

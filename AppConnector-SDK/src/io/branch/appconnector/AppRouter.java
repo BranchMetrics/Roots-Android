@@ -100,6 +100,8 @@ class AppRouter {
 //        i.setData(Uri.parse(appLaunchConfig.getTargetAppFallbackUrl()));
 //        context.startActivity(i);
 
+        // AA: I'd say let's cut out the webview and save for V2. I'm a bit worried about incorporating UI elements into this library. Let's just use the Intent to HTTP url.
+
         new FallbackWebView(context, appLaunchConfig, new FallbackWebView.IFallbackWebViewActionEvents() {
             @Override
             public void onDownloadAppSelected() {

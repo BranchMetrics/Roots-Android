@@ -64,6 +64,8 @@ class DeeplinkRouter {
                 activityCnt_--;
             }
         };
+
+        // AA: can you get a reference to the existing lifecycle callback and then manually call it from within the new one you override it with?
         application.registerActivityLifecycleCallbacks(lifecycleCallbacks_);
     }
 
@@ -131,6 +133,8 @@ class DeeplinkRouter {
                                     break;
                                 }
                             }
+
+                            // AA: We should also check for Android App Links
                         }
                     }
                     if (!strongMatchFound) { // If there  is not strong URI match check for a fallback URL match

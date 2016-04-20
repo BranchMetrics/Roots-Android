@@ -14,6 +14,8 @@ public class DeepLinkTestApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // AA: does this mean it can't be used with Branch?
         AppConnector.enableDeeplinkRouting(this);
     }
 }

@@ -22,6 +22,8 @@ class AppConnectionExtractor {
         ERR_UNKNOWN
     }
 
+    // AA: Is there any way we can use something like "<current package name> app connector 1.0.0"
+
     private static final String USER_AGENT_STRING = "Chrome 41.0.2227.1";
     //private static final String USER_AGENT_STRING = "Mozilla/5.0 (Linux; U; Android 4.0.3; de-ch; HTC Sensation Build/IML74K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
 
