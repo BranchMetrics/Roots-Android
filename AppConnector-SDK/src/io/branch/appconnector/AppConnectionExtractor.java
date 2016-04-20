@@ -3,6 +3,7 @@ package io.branch.appconnector;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -25,8 +26,8 @@ class AppConnectionExtractor {
         ERR_UNKNOWN
     }
 
-    //private static final String USER_AGENT_STRING = "Chrome 41.0.2227.1";
-    private static final String DEFAULT_USER_AGENT_STRING = "Mozilla/5.0 (Linux; U; Android 4.0.3; de-ch; HTC Sensation Build/IML74K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
+    private static final String DEFAULT_USER_AGENT_STRING = "Chrome 41.0.2227.1"; //BNC links need this inorder to return the al data with out redirecting
+    //private static final String DEFAULT_USER_AGENT_STRING = "Mozilla/5.0 (Linux; U; Android 4.0.3; de-ch; HTC Sensation Build/IML74K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
 
     private static final String METADATA_READ_JAVASCRIPT = "javascript:window.HTMLOUT.showHTML" +
             "((function() {" +
@@ -57,23 +58,25 @@ class AppConnectionExtractor {
     public static void scrapeAppLinkTags(final Context context, final String url, String browserAgentString, final IAppConnectionExtractorEvents callback) {
         try {
             final WebView browser = new WebView(context);
+            browser.setVisibility(View.GONE);
+
             browser.getSettings().setJavaScriptEnabled(true);
             browser.getSettings().setBlockNetworkImage(true);
-            browser.getSettings().setBlockNetworkLoads(true);
             browser.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
             browser.getSettings().setLoadsImagesAutomatically(false);
             browser.getSettings().setAllowContentAccess(false);
             browser.getSettings().setDomStorageEnabled(true);
 
+
             String agentString = browserAgentString == null ? DEFAULT_USER_AGENT_STRING : browserAgentString;
-            browser.getSettings().setUserAgentString(browserAgentString);
+            browser.getSettings().setUserAgentString(agentString);
 
             browser.addJavascriptInterface(new Object() {
                 @SuppressWarnings("unused")
                 @JavascriptInterface
                 public void showHTML(String html) throws JSONException {
                     AppLaunchConfig appLaunchConfig = new AppLaunchConfig(new JSONArray(html), url);
-
+                    Log.d("AppConnectionExtractor", new JSONArray(html).toString());
                     if (callback != null) {
                         callback.onAppLaunchConfigAvailable(appLaunchConfig, CONN_EXTRACT_ERR.NO_ERROR);
                     }

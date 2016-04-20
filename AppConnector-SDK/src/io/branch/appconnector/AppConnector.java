@@ -69,16 +69,17 @@ public class AppConnector {
         return this;
     }
 
+    //TODO : This is a V2 functionality. ON V1 SDK is not injecting any UI components
     /**
      * Adds a button to download the app on showing the fallback url
      *
      * @param addDownloadAppButton true to add a download app button to the fallback url
      * @return {@link AppConnector} instance for method chaining
      */
-    public AppConnector addDownloadAppButtonOnFallbackView(boolean addDownloadAppButton) {
-        addDownloadAppButton_ = addDownloadAppButton;
-        return this;
-    }
+//    public AppConnector addDownloadAppButtonOnFallbackView(boolean addDownloadAppButton) {
+//        addDownloadAppButton_ = addDownloadAppButton;
+//        return this;
+//    }
 
     /**
      * Sets an optional browser string to access and inspect the navigation url.

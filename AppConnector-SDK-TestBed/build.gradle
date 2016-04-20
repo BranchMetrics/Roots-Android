@@ -4,9 +4,6 @@ dependencies {
     compile project (':AppConnector-SDK')
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:24.0.0-alpha1'
-
-    compile 'com.parse.bolts:bolts-tasks:1.4.0'
-    compile 'com.parse.bolts:bolts-applinks:1.4.0'
 }
 
 
