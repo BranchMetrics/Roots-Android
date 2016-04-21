@@ -100,14 +100,6 @@ class AppRouter {
         i.setData(Uri.parse(appLaunchConfig.getTargetAppFallbackUrl()));
         context.startActivity(i);
 
-        //TODO : This is a V2 functionality. ON V1 SDK is not injecting any UI components
-//        new FallbackWebView(context, appLaunchConfig, new FallbackWebView.IFallbackWebViewActionEvents() {
-//            @Override
-//            public void onDownloadAppSelected() {
-//                openPlayStore(context, appLaunchConfig, callback);
-//            }
-//        }).createAndShow();
-
         if (callback != null) {
             callback.onFallbackUrlOpened(appLaunchConfig.getTargetAppFallbackUrl());
         }
