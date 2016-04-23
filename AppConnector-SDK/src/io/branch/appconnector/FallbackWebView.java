@@ -12,6 +12,8 @@ import android.webkit.WebView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+// AA: Can we delete this class from master? Keep it in a separate branch for V2. Just don't want to confuse people
+
 /**
  * <p>
  * Class for showing the fallback url. Class provides functionality to add a download application button also to help downloading the app.

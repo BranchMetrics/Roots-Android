@@ -27,6 +27,7 @@ class AppConnectionExtractor {
         ERR_UNKNOWN
     }
 
+    // AA: Do we need to give credit to Facebook for this? Let's make sure to cite our sources if so
     private static final String METADATA_READ_JAVASCRIPT = "javascript:window.HTMLOUT.showHTML" +
             "((function() {" +
             "  var metaTags = document.getElementsByTagName('meta');" +
@@ -72,6 +73,7 @@ class AppConnectionExtractor {
                 @JavascriptInterface
                 public void showHTML(String html) throws JSONException {
                     AppLaunchConfig appLaunchConfig = new AppLaunchConfig(new JSONArray(html), url);
+                    // AA: Let's get rid of these logs
                     Log.d("AppConnectionExtractor", new JSONArray(html).toString());
                     if (callback != null) {
                         callback.onAppLaunchConfigAvailable(appLaunchConfig, CONN_EXTRACT_ERR.NO_ERROR);
@@ -82,12 +84,14 @@ class AppConnectionExtractor {
             browser.setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    // AA: Let's get rid of these logs
                     Log.d("WebViewTest", "onPageStarted " + url);
                     super.onPageStarted(view, url, favicon);
                 }
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
+                    // AA: Let's get rid of these logs
                     Log.d("WebViewTest", "onPageFinished " + url);
                     browser.loadUrl(METADATA_READ_JAVASCRIPT);
                 }
@@ -115,6 +119,7 @@ class AppConnectionExtractor {
 
     private static String getUserAgentString(Context context, String url, String customUserAgentString, WebView view) {
         // Check if the url is a Branch Url
+        // AA: We're going to need to get rid of this code. You can update the backend to check for 'app connector'. It's fine to leave this for the time being though.
         try {
             Uri uri = Uri.parse(url);
             if (uri.getHost().equalsIgnoreCase("bnc.lt")

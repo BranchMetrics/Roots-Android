@@ -13,6 +13,8 @@ import android.text.TextUtils;
  */
 class Matcher {
 
+    // AA: For notes only: please add the * variable to path functionality
+
     public static boolean matchUriPattern(String actualUriString, String pattern) {
         String paramName = getParamNameFromUriPattern(pattern);
         String patternWithoutParam = pattern.replace("{" + paramName + "}", "").toLowerCase();
