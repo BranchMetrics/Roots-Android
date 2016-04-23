@@ -49,10 +49,12 @@ class DeeplinkRouter {
             }
 
             @Override
-            public void onActivityResumed(Activity activity) {}
+            public void onActivityResumed(Activity activity) {
+            }
 
             @Override
-            public void onActivityPaused(Activity activity) {}
+            public void onActivityPaused(Activity activity) {
+            }
 
             @Override
             public void onActivityStopped(Activity activity) {
@@ -60,10 +62,12 @@ class DeeplinkRouter {
             }
 
             @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+            }
 
             @Override
-            public void onActivityDestroyed(Activity activity) {}
+            public void onActivityDestroyed(Activity activity) {
+            }
         };
         application.registerActivityLifecycleCallbacks(lifecycleCallbacks_);
     }
@@ -147,7 +151,6 @@ class DeeplinkRouter {
         }
         return intent;
     }
-
 
 
 }

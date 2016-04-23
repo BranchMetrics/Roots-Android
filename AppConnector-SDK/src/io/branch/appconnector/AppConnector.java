@@ -2,12 +2,8 @@ package io.branch.appconnector;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
 
 import org.json.JSONArray;
-
-import java.security.PrivateKey;
 
 /**
  * Created by sojanpr on 4/5/16.
@@ -87,7 +83,14 @@ public class AppConnector {
      * </p>
      */
     public void connect() {
-        AppConnectionExtractor.scrapeAppLinkTags(activity_, url_, browserAgentString_, new AppConnExtractionEvents());
+        // 1. Try to open the app without scraping the app link tags in case of app links
+        if (AppRouter.resolveUrlToAppWithoutPackageName(activity_, url_, connectionEventsCallback_)) {
+            // Launched with app linked to url
+        }
+        // 2. If no app with matching app linked to the url scrape the Url for app link meta data
+        else {
+            AppConnectionExtractor.scrapeAppLinkTags(activity_, url_, browserAgentString_, new AppConnExtractionEvents());
+        }
     }
 
     /**
@@ -108,7 +111,6 @@ public class AppConnector {
         public void onAppLaunchConfigAvailable(final AppLaunchConfig appLaunchConfig, AppConnectionExtractor.CONN_EXTRACT_ERR err) {
             if (err == AppConnectionExtractor.CONN_EXTRACT_ERR.NO_ERROR) {
                 appLaunchConfig.setAlwaysOpenWebUrl(alwaysFallbackToWebUrl_);
-                appLaunchConfig.setAddDownloadAppBtn(addDownloadAppButton_);
                 activity_.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by sojanpr on 4/7/16.
@@ -24,12 +27,25 @@ class AppRouter {
         try {
             if (appLaunchConfig.isLaunchIntentAvailable()) {
                 if (isAppInstalled(context, appLaunchConfig.getTargetAppPackageName())) {  //Open the app if app is installed
-                    openAppWithUriScheme(context, appLaunchConfig, callback);
+                    // 1. Check if the actual url is a configured app link
+                    if (launchOnAppLinkMatchingForUrl(context, appLaunchConfig.getActualUri(), appLaunchConfig, callback)) {
+                        // Launched app with App link association for actual uri
+                    }
+                    // 2. Check if the target android uri is configured for app link
+                    else if (launchOnAppLinkMatchingForUrl(context, appLaunchConfig.getTargetUri(), appLaunchConfig, callback)) {
+                        // Launched app with App link association for target uri
+                    }
+                    // 3. Check id the android uri is a non app linked uri
+                    else {
+                        openAppWithUriScheme(context, appLaunchConfig, callback);
+                    }
+
                 } else { // If app is not installed
                     handleAppNotInstalled(context, appLaunchConfig, callback);
                 }
             } else {
                 openFallbackUrl(context, appLaunchConfig, callback);
+
             }
         } catch (UnsupportedEncodingException ex) {
             routingHandled = false;
@@ -75,9 +91,9 @@ class AppRouter {
     }
 
     private static void handleAppNotInstalled(Context context, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) throws UnsupportedEncodingException {
-        if(appLaunchConfig.isAlwaysOpenWebUrl()){
-            openFallbackUrl(context,appLaunchConfig,callback);
-        }else {
+        if (appLaunchConfig.isAlwaysOpenWebUrl()) {
+            openFallbackUrl(context, appLaunchConfig, callback);
+        } else {
             openPlayStore(context, appLaunchConfig, callback);
         }
     }
@@ -103,6 +119,80 @@ class AppRouter {
         if (callback != null) {
             callback.onFallbackUrlOpened(appLaunchConfig.getTargetAppFallbackUrl());
         }
+    }
+
+    /**
+     * Check if a specified app is configured for Android app link with the given url and launches the app.
+     * Return true if app is opened on finding a matching app link
+     *
+     * @param context         Application context
+     * @param url             The url to check for app link configuration
+     * @param appLaunchConfig AppLaunchConfig object
+     * @return {@link Boolean} with value true if app is launched on finding an app link match
+     */
+    private static boolean launchOnAppLinkMatchingForUrl(Context context, String url, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) {
+        boolean resolvedIntent = false;
+        Uri uri = Uri.parse(url);
+        if (uri != null && uri.getScheme() != null) {
+            // Check if a possible App link. Android App link urls only support schemes https and http
+            if ((uri.getScheme().equalsIgnoreCase("https") || uri.getScheme().equalsIgnoreCase("http"))
+                    && !TextUtils.isEmpty(uri.getHost())) {
+
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setPackage(appLaunchConfig.getTargetAppPackageName());
+                intent.setData(uri);
+                if (intent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(intent);
+                    if (callback != null) {
+                        callback.onAppLaunched(appLaunchConfig.getTargetAppName(), appLaunchConfig.getTargetAppPackageName());
+                    }
+                    resolvedIntent = true;
+                }
+            }
+        }
+        return resolvedIntent;
+    }
+
+    /**
+     * <p>
+     * Checks for any app match for the given url by resolving the URI without a package name.
+     * Browsers are removed from the resolved info. Launches the intent only if there is only one application other than
+     * browsers is matched for the resolved info
+     * </p>
+     *
+     * @param context  Application context
+     * @param url      Url to resolve to installed app
+     * @param callback {@link io.branch.appconnector.AppConnector.IAppConnectionEvents} instance to callback resolve url status
+     * @return {@link Boolean} with value true if url is resolved to an app.
+     */
+    public static boolean resolveUrlToAppWithoutPackageName(Context context, String url, AppConnector.IAppConnectionEvents callback) {
+        boolean isAppResolved = false;
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        final List<ResolveInfo> matchingApps = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        ArrayList<ResolveInfo> nonBrowserAppResolveInfo = new ArrayList<>();
+        // Remove the browser apps form resolved info
+        for (ResolveInfo resolveInfo : matchingApps) {
+            if (resolveInfo.activityInfo != null
+                    && !resolveInfo.activityInfo.packageName.toLowerCase().contains(".browser")
+                    && !resolveInfo.activityInfo.packageName.toLowerCase().contains(".chrome")) {
+                nonBrowserAppResolveInfo.add(resolveInfo);
+            }
+        }
+        // Launch only if a single app is resolved other than browser apps
+        if (nonBrowserAppResolveInfo.size() == 1) {
+            isAppResolved = true;
+            String packageName = nonBrowserAppResolveInfo.get(0).activityInfo.packageName;
+            intent.setPackage(packageName);
+            context.startActivity(intent);
+            if (callback != null) {
+                callback.onAppLaunched(nonBrowserAppResolveInfo.get(0).activityInfo.applicationInfo.name, packageName);
+            }
+        }
+
+        return isAppResolved;
     }
 
     /**

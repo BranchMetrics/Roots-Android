@@ -1,7 +1,5 @@
 package io.branch.appconnector;
 
-import android.app.ActivityManager;
-import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -27,6 +25,8 @@ class AppLaunchConfig {
 
     public static final int PORT_UNDEFINED = -1;
 
+    private String actualUri_;
+    private String targetUri_;
     private String targetAppName_;
     private String targetAppLaunchScheme_;
     private String targetAppLaunchHost_;
@@ -49,6 +49,24 @@ class AppLaunchConfig {
      */
     public AppLaunchConfig(JSONArray appLinkMetaDataArray, String url) {
         createFromAppLinkData(appLinkMetaDataArray, url);
+    }
+
+    /**
+     * Get the actual uri for opening the app
+     *
+     * @return {@link String} with value of actual url used for app connection.
+     */
+    public String getActualUri() {
+        return actualUri_;
+    }
+
+    /**
+     * Get the actual target uri for opening the app
+     *
+     * @return {@link String} with value of target uri used for app connection.
+     */
+    public String getTargetUri() {
+        return targetUri_;
     }
 
     /**
@@ -142,15 +160,6 @@ class AppLaunchConfig {
     }
 
     /**
-     * Specifies whether to add a download app button with the fall back url
-     *
-     * @param addDownloadAppBtn True to a download app button
-     */
-    public void setAddDownloadAppBtn(boolean addDownloadAppBtn) {
-        addDownloadAppBtn_ = addDownloadAppBtn;
-    }
-
-    /**
      * Check if download app button is opted
      *
      * @return True if download app button is opted
@@ -167,7 +176,8 @@ class AppLaunchConfig {
      * @return Instance of {@link AppLaunchConfig} for the given metadata
      */
     private void createFromAppLinkData(JSONArray metadataArray, String url) {
-        // Default value for the fallback is the target url itself
+        actualUri_ = url;
+        // Default value for the fallback is the url itself
         targetAppFallbackUrl_ = url;
         if (metadataArray != null) {
             try {
@@ -185,6 +195,7 @@ class AppLaunchConfig {
                             targetAppFallbackUrl_ = value;
                         } else if (property.equalsIgnoreCase(PROPERTY_ANDROID_URL)) {
                             Uri uri = Uri.parse(value);
+                            targetUri_ = value;
                             targetAppLaunchScheme_ = uri.getScheme();
                             targetAppLaunchHost_ = uri.getHost();
                             targetAppLaunchPath_ = uri.getPath();
