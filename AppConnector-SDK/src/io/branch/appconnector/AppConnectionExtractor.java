@@ -2,7 +2,9 @@ package io.branch.appconnector;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -12,7 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 /**
- * Created by sojanpr on 4/6/16.
+ * Created by Branch on 4/6/16.
  * <p>
  * Class for extracting the app connection params such as app links or other metadata for a given url.
  * </p>
@@ -24,9 +26,6 @@ class AppConnectionExtractor {
         ERR_NO_INTERNET,
         ERR_UNKNOWN
     }
-
-    //private static final String USER_AGENT_STRING = "Chrome 41.0.2227.1";
-    private static final String DEFAULT_USER_AGENT_STRING = "Mozilla/5.0 (Linux; U; Android 4.0.3; de-ch; HTC Sensation Build/IML74K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
 
     private static final String METADATA_READ_JAVASCRIPT = "javascript:window.HTMLOUT.showHTML" +
             "((function() {" +
@@ -57,23 +56,23 @@ class AppConnectionExtractor {
     public static void scrapeAppLinkTags(final Context context, final String url, String browserAgentString, final IAppConnectionExtractorEvents callback) {
         try {
             final WebView browser = new WebView(context);
+            browser.setVisibility(View.GONE);
+
             browser.getSettings().setJavaScriptEnabled(true);
             browser.getSettings().setBlockNetworkImage(true);
-            browser.getSettings().setBlockNetworkLoads(true);
             browser.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
             browser.getSettings().setLoadsImagesAutomatically(false);
             browser.getSettings().setAllowContentAccess(false);
             browser.getSettings().setDomStorageEnabled(true);
 
-            String agentString = browserAgentString == null ? DEFAULT_USER_AGENT_STRING : browserAgentString;
-            browser.getSettings().setUserAgentString(browserAgentString);
+            browser.getSettings().setUserAgentString(getUserAgentString(context, url, browserAgentString, browser));
 
             browser.addJavascriptInterface(new Object() {
                 @SuppressWarnings("unused")
                 @JavascriptInterface
                 public void showHTML(String html) throws JSONException {
                     AppLaunchConfig appLaunchConfig = new AppLaunchConfig(new JSONArray(html), url);
-
+                    Log.d("AppConnectionExtractor", new JSONArray(html).toString());
                     if (callback != null) {
                         callback.onAppLaunchConfigAvailable(appLaunchConfig, CONN_EXTRACT_ERR.NO_ERROR);
                     }
@@ -112,6 +111,27 @@ class AppConnectionExtractor {
          * @param err             {@link io.branch.appconnector.AppConnectionExtractor.CONN_EXTRACT_ERR} representing any error while creating app launch config
          */
         void onAppLaunchConfigAvailable(AppLaunchConfig appLaunchConfig, CONN_EXTRACT_ERR err);
+    }
+
+    private static String getUserAgentString(Context context, String url, String customUserAgentString, WebView view) {
+        // Check if the url is a Branch Url
+        try {
+            Uri uri = Uri.parse(url);
+            if (uri.getHost().equalsIgnoreCase("bnc.lt")
+                    || uri.getHost().toLowerCase().endsWith(".app.link")) {
+                String packageName = context.getApplicationContext().getPackageName();
+                String sdkVersion = Defines.VERSION_NAME;
+                return "<" + packageName + " app connector " + sdkVersion + ">";
+            }
+        } catch (Exception ignore) {
+        }
+
+        String uaString = customUserAgentString != null ? customUserAgentString : view.getSettings().getUserAgentString();
+        String packageName = context.getApplicationContext().getPackageName();
+        String sdkVersion = Defines.VERSION_NAME;
+        uaString = uaString + " " + packageName + " app connector " + sdkVersion;
+        return uaString;
+
     }
 
 
