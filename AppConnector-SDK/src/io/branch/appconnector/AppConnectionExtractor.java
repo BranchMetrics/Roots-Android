@@ -73,8 +73,6 @@ class AppConnectionExtractor {
                 @JavascriptInterface
                 public void showHTML(String html) throws JSONException {
                     AppLaunchConfig appLaunchConfig = new AppLaunchConfig(new JSONArray(html), url);
-                    // AA: Let's get rid of these logs
-                    Log.d("AppConnectionExtractor", new JSONArray(html).toString());
                     if (callback != null) {
                         callback.onAppLaunchConfigAvailable(appLaunchConfig, CONN_EXTRACT_ERR.NO_ERROR);
                     }
@@ -84,15 +82,11 @@ class AppConnectionExtractor {
             browser.setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                    // AA: Let's get rid of these logs
-                    Log.d("WebViewTest", "onPageStarted " + url);
-                    super.onPageStarted(view, url, favicon);
+                   super.onPageStarted(view, url, favicon);
                 }
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    // AA: Let's get rid of these logs
-                    Log.d("WebViewTest", "onPageFinished " + url);
                     browser.loadUrl(METADATA_READ_JAVASCRIPT);
                 }
             });
