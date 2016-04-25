@@ -21,6 +21,7 @@ public class AppConnector {
     private IAppConnectionEvents connectionEventsCallback_;
     private boolean addDownloadAppButton_;
     private String browserAgentString_ = null;
+    private boolean isUserOverridingFallbackRule_;
 
     /**
      * <p>
@@ -49,6 +50,7 @@ public class AppConnector {
      * @return {@link AppConnector} instance for method chaining
      */
     public AppConnector setAlwaysFallbackToWebUrl(boolean alwaysFallbackToWebUrl) {
+        isUserOverridingFallbackRule_ = true;
         alwaysFallbackToWebUrl_ = alwaysFallbackToWebUrl;
         return this;
     }
@@ -110,7 +112,9 @@ public class AppConnector {
         @Override
         public void onAppLaunchConfigAvailable(final AppLaunchConfig appLaunchConfig, AppConnectionExtractor.CONN_EXTRACT_ERR err) {
             if (err == AppConnectionExtractor.CONN_EXTRACT_ERR.NO_ERROR) {
-                appLaunchConfig.setAlwaysOpenWebUrl(alwaysFallbackToWebUrl_);
+                if (isUserOverridingFallbackRule_) {
+                    appLaunchConfig.setAlwaysOpenWebUrl(alwaysFallbackToWebUrl_);
+                }
                 activity_.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

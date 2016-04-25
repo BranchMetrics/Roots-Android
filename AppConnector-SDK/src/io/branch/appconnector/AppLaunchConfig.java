@@ -22,6 +22,7 @@ class AppLaunchConfig {
     private static final String PROPERTY_ANDROID_APP_NAME = "al:android:app_name";
     private static final String PROPERTY_ANDROID_PACKAGE_NAME = "al:android:package";
     private static final String PROPERTY_WEB_URL = "al:web:url";
+    private static final String PROPERTY_ALWAYS_WEB_FALLBACK = "al:web:should_fallback";
 
     public static final int PORT_UNDEFINED = -1;
 
@@ -196,6 +197,12 @@ class AppLaunchConfig {
                             targetAppPackageName_ = value;
                         } else if (property.equalsIgnoreCase(PROPERTY_WEB_URL)) {
                             targetAppFallbackUrl_ = value;
+                        } else if (property.equalsIgnoreCase(PROPERTY_ALWAYS_WEB_FALLBACK)) {
+                            try {
+                                alwaysOpenWebUrl_ = Boolean.parseBoolean(value);
+                            } catch (Exception ignore) {
+
+                            }
                         } else if (property.equalsIgnoreCase(PROPERTY_ANDROID_URL)) {
                             Uri uri = Uri.parse(value);
                             targetUri_ = value;
