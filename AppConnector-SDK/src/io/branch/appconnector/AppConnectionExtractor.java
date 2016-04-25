@@ -27,7 +27,8 @@ class AppConnectionExtractor {
         ERR_UNKNOWN
     }
 
-    // AA: Do we need to give credit to Facebook for this? Let's make sure to cite our sources if so
+    // Injecting Javascript to get the app liks as JSONArray
+    // Source :https://github.com/BoltsFramework/Bolts-Android/blob/master/bolts-applinks/src/main/java/bolts/WebViewAppLinkResolver.java#L52
     private static final String METADATA_READ_JAVASCRIPT = "javascript:window.HTMLOUT.showHTML" +
             "((function() {" +
             "  var metaTags = document.getElementsByTagName('meta');" +
