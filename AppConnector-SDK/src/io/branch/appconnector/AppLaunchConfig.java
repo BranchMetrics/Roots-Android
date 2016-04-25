@@ -36,7 +36,7 @@ class AppLaunchConfig {
     private String targetAppLaunchParams_;
     private String targetAppPackageName_;
     private String targetAppFallbackUrl_;
-    private boolean alwaysOpenWebUrl_ = false;
+    private boolean alwaysOpenWebUrl_ = true;
     private boolean addDownloadAppBtn_ = false;
 
 
@@ -148,7 +148,6 @@ class AppLaunchConfig {
      * @return {@link Boolean} with value true if set to open the web url always
      */
     public boolean isAlwaysOpenWebUrl() {
-        // AA: We'll want to default this to true unless otherwise specified.
         return alwaysOpenWebUrl_;
     }
 
@@ -186,8 +185,6 @@ class AppLaunchConfig {
                 for (int i = 0; i < metadataArray.length(); i++) {
                     JSONObject metaDataJson = metadataArray.getJSONObject(i);
                     if (metaDataJson.has(PROPERTY_KEY) && metaDataJson.has(CONTENT_KEY)) {
-                        // AA: Make sure to add the web url fallback check
-
                         String property = metaDataJson.getString(PROPERTY_KEY);
                         String value = metaDataJson.getString(CONTENT_KEY);
 
