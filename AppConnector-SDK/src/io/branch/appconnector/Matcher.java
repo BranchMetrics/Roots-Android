@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -41,9 +40,7 @@ class Matcher {
         intent.putExtra(Defines.APP_CONNECTOR_DEEPLINK_LAUNCH_KEY, true);
 
         HashMap<String, String> paramValMap = captureParamsFromUri(actualUriString, pattern);
-        Set<String> keys = paramValMap.keySet();
-        while (keys.iterator().hasNext()) {
-            String paramName = keys.iterator().next();
+        for (String paramName : paramValMap.keySet()) {
             intent.putExtra(paramName, paramValMap.get(paramName));
         }
         return intent;
@@ -61,12 +58,13 @@ class Matcher {
     private static HashMap<String, String> captureParamsFromUri(String uri, String pattern) {
         HashMap<String, String> paramValueMap = new HashMap<>();
 
-        String getValueExpression = pattern.replaceAll("(\\{[^}]*\\})", "(.+)");
-        getValueExpression = getValueExpression.replaceAll("\\*", ".+");
-        java.util.regex.Matcher valueMatcher = Pattern.compile(getValueExpression).matcher(uri);
+        String uriWithoutQueryParam = uri.split("\\?")[0];
+        String getValueExpression = pattern.replaceAll("\\*", ".+");
+        getValueExpression = pattern.replaceAll("(\\{[^}]*\\})", "(.+)");
+        java.util.regex.Matcher valueMatcher = Pattern.compile(getValueExpression).matcher(uriWithoutQueryParam);
 
-        String getParamExpression = pattern.replaceAll("(\\{[^/]*\\})", "\\\\{(.*?)\\\\}");
-        getParamExpression = getParamExpression.replaceAll("\\*", ".+");
+        String getParamExpression = pattern.replaceAll("\\*", ".+");
+        getParamExpression = pattern.replaceAll("(\\{[^/]*\\})", "\\\\{(.*?)\\\\}");
         java.util.regex.Matcher paramMatcher = Pattern.compile(getParamExpression).matcher(pattern);
 
         if (paramMatcher.matches() && valueMatcher.matches()) {
