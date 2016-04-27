@@ -1,10 +1,8 @@
 package io.branch.appconnectordeeplinktestbed;
 
-        import android.app.Activity;
-        import android.os.Bundle;
-        import android.widget.Toast;
-
-        import io.branch.appconnector.AppConnector;
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
 
 /**
  * <p>
@@ -22,6 +20,14 @@ public class DeepLinkTestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deeplinktest);
-        Toast.makeText(this, "user_id : " + getIntent().getStringExtra("user_id"), Toast.LENGTH_LONG).show();
+
+        Bundle bundle = getIntent().getExtras();
+        String paramString = "";
+        for (String key : bundle.keySet()) {
+            Object value = bundle.get(key);
+            paramString += key + "  =  " + value + "\n";
+
+        }
+        ((TextView) findViewById(R.id.params_txt)).setText(paramString);
     }
 }
