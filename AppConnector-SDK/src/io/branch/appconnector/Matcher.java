@@ -60,11 +60,11 @@ class Matcher {
 
         String uriWithoutQueryParam = uri.split("\\?")[0];
         String getValueExpression = pattern.replaceAll("\\*", ".+");
-        getValueExpression = pattern.replaceAll("(\\{[^}]*\\})", "(.+)");
+        getValueExpression = getValueExpression.replaceAll("(\\{[^}]*\\})", "(.+)");
         java.util.regex.Matcher valueMatcher = Pattern.compile(getValueExpression).matcher(uriWithoutQueryParam);
 
         String getParamExpression = pattern.replaceAll("\\*", ".+");
-        getParamExpression = pattern.replaceAll("(\\{[^/]*\\})", "\\\\{(.*?)\\\\}");
+        getParamExpression = getParamExpression.replaceAll("(\\{[^/]*\\})", "\\\\{(.*?)\\\\}");
         java.util.regex.Matcher paramMatcher = Pattern.compile(getParamExpression).matcher(pattern);
 
         if (paramMatcher.matches() && valueMatcher.matches()) {
