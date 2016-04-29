@@ -39,7 +39,7 @@ public class TestBedMainActivity extends Activity implements AppConnector.IAppCo
 
                 AppConnector appConnector = new AppConnector(TestBedMainActivity.this, navUrl)
                         .setAppConnectionEventsCallback(TestBedMainActivity.this)
-                        .setAlwaysFallbackToWebUrl(((CheckBox) findViewById(R.id.web_fallback_chkbx)).isChecked());
+                        .setAlwaysFallbackToPlayStore(((CheckBox) findViewById(R.id.web_fallback_chkbx)).isChecked());
 
                 if (URLUtil.isValidUrl(navUrl)) {
                     appConnector.connect(); // Open the using the URL entered

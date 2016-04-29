@@ -31,11 +31,10 @@ class AppConnectionExtractor {
 
     public enum CONN_EXTRACT_ERR {
         NO_ERROR,
-        ERR_NO_INTERNET,
         ERR_UNKNOWN
     }
 
-    // Injecting Javascript to get the app liks as JSONArray
+    // Injecting Javascript to get the app links as JSONArray
     // Source :https://github.com/BoltsFramework/Bolts-Android/blob/master/bolts-applinks/src/main/java/bolts/WebViewAppLinkResolver.java#L52
     private static final String METADATA_READ_JAVASCRIPT = "javascript:window.HTMLOUT.showHTML" +
             "((function() {" +

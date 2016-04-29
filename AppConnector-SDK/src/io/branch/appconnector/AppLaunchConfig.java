@@ -36,8 +36,7 @@ class AppLaunchConfig {
     private String targetAppLaunchParams_;
     private String targetAppPackageName_;
     private String targetAppFallbackUrl_;
-    private boolean alwaysOpenWebUrl_ = true;
-    private boolean addDownloadAppBtn_ = false;
+    private boolean alwaysOpenPlayStore_ = true;
 
 
     /**
@@ -100,7 +99,7 @@ class AppLaunchConfig {
     /**
      * get the path for the uri to launch the target app
      *
-     * @return{@link String} with value for the target app uri path
+     * @return  {@link String} with value for the target app uri path
      */
     public String getTargetAppLaunchPath() {
         return targetAppLaunchPath_;
@@ -147,26 +146,18 @@ class AppLaunchConfig {
      *
      * @return {@link Boolean} with value true if set to open the web url always
      */
-    public boolean isAlwaysOpenWebUrl() {
-        return alwaysOpenWebUrl_;
+    @SuppressWarnings("unused")
+    public boolean isAlwaysOpenPlayStore() {
+        return alwaysOpenPlayStore_;
     }
 
     /**
-     * Specifies if the fall back is set to web url always
+     * Specifies if the fall back is set to PlayStore  always
      *
-     * @param alwaysOpenWebUrl True to set always fallback to we url
+     * @param alwaysOpenPlayStore True to set always fallback to playStore
      */
-    public void setAlwaysOpenWebUrl(boolean alwaysOpenWebUrl) {
-        this.alwaysOpenWebUrl_ = alwaysOpenWebUrl;
-    }
-
-    /**
-     * Check if download app button is opted
-     *
-     * @return True if download app button is opted
-     */
-    public boolean isAddDownloadAppBtn() {
-        return addDownloadAppBtn_;
+    public void setAlwaysOpenPlayStore(boolean alwaysOpenPlayStore) {
+        this.alwaysOpenPlayStore_ = alwaysOpenPlayStore;
     }
 
     /**
@@ -174,10 +165,10 @@ class AppLaunchConfig {
      *
      * @param metadataArray App Link metadata array
      * @param url           {@link String} with value for the target url
-     * @return Instance of {@link AppLaunchConfig} for the given metadata
      */
     private void createFromAppLinkData(JSONArray metadataArray, String url) {
         actualUri_ = url;
+        actualUri_ = actualUri_.toLowerCase();
         // Default value for the fallback is the url itself
         targetAppFallbackUrl_ = url;
         if (metadataArray != null) {
@@ -196,7 +187,7 @@ class AppLaunchConfig {
                             targetAppFallbackUrl_ = value;
                         } else if (property.equalsIgnoreCase(PROPERTY_ALWAYS_WEB_FALLBACK)) {
                             try {
-                                alwaysOpenWebUrl_ = Boolean.parseBoolean(value);
+                                alwaysOpenPlayStore_ = Boolean.parseBoolean(value);
                             } catch (Exception ignore) {
 
                             }

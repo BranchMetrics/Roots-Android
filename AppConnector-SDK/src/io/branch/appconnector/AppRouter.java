@@ -91,10 +91,10 @@ class AppRouter {
     }
 
     private static void handleAppNotInstalled(Context context, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) throws UnsupportedEncodingException {
-        if (appLaunchConfig.isAlwaysOpenWebUrl()) {
-            openFallbackUrl(context, appLaunchConfig, callback);
-        } else {
+        if (appLaunchConfig.isAlwaysOpenPlayStore()) {
             openPlayStore(context, appLaunchConfig, callback);
+        } else {
+            openFallbackUrl(context, appLaunchConfig, callback);
         }
     }
 
@@ -111,9 +111,9 @@ class AppRouter {
     }
 
 
-    private static void openFallbackUrl(final Context context, final AppLaunchConfig appLaunchConfig, final AppConnector.IAppConnectionEvents callback) throws UnsupportedEncodingException {
+    public static void openFallbackUrl(final Context context, final AppLaunchConfig appLaunchConfig, final AppConnector.IAppConnectionEvents callback) throws UnsupportedEncodingException {
         Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(appLaunchConfig.getTargetAppFallbackUrl()));
+        i.setData(Uri.parse(appLaunchConfig.getTargetAppFallbackUrl().toLowerCase()));
         context.startActivity(i);
 
         if (callback != null) {

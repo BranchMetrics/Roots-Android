@@ -34,15 +34,8 @@
           android:layout_height="wrap_content"
           android:padding="5dp"
           android:layout_marginTop="5dp"
-          android:text="@string/fallback_web_button"/>
+          android:text="@string/fallback_playstore_button"/>
 
-      <CheckBox
-          android:id="@+id/add_download_btn_chkbx"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:padding="5dp"
-          android:layout_marginTop="5dp"
-          android:text="@string/add_download_button"/>
 
   </LinearLayout>
 
