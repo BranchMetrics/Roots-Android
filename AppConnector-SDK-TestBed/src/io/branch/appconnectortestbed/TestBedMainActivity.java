@@ -39,7 +39,7 @@ public class TestBedMainActivity extends Activity implements AppConnector.IAppCo
 
                 AppConnector appConnector = new AppConnector(TestBedMainActivity.this, navUrl)
                         .setAppConnectionEventsCallback(TestBedMainActivity.this)
-                        .setAlwaysFallbackToWebUrl(((CheckBox) findViewById(R.id.web_fallback_chkbx)).isChecked());
+                        .setAlwaysFallbackToPlayStore(((CheckBox) findViewById(R.id.web_fallback_chkbx)).isChecked());
 
                 if (URLUtil.isValidUrl(navUrl)) {
                     appConnector.connect(); // Open the using the URL entered
@@ -47,7 +47,7 @@ public class TestBedMainActivity extends Activity implements AppConnector.IAppCo
                     try {
                         appConnector.debugConnect("https://my_awesome_site.com/user/my_user_id123456",
                                 new JSONArray("[{\"property\":\"al:android:url\"," +
-                                        "\"content\":\"myscheme://user/my_user_id1234\"}," +
+                                        "\"content\":\"myscheme://mypath/user/my_user_id1234/my_username\"}," +
                                         "{\"property\":\"al:android:package\",\"content\":\"io.branch.appconnectordeeplinktestbed\"}," +
                                         "{\"property\":\"al:android:app_name\",\"content\":\"AppConnectorTestBed\"}]"));
                     } catch (JSONException e) {

@@ -2,8 +2,12 @@ package io.branch.appconnector;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.json.JSONArray;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by sojanpr on 4/5/16.
@@ -17,10 +21,10 @@ public class AppConnector {
     /* URL set for opening the app */
     private final String url_;
     private final Activity activity_;
-    private boolean alwaysFallbackToWebUrl_;
+    private boolean alwaysFallbackToPlayStore_;
     private IAppConnectionEvents connectionEventsCallback_;
-    private boolean addDownloadAppButton_;
     private String browserAgentString_ = null;
+    private boolean isUserOverridingFallbackRule_;
 
     /**
      * <p>
@@ -29,11 +33,10 @@ public class AppConnector {
      *
      * @param url {@link String} with value for the URL to open
      */
-    public AppConnector(Activity activity, String url) {
+    public AppConnector(@NonNull Activity activity, @NonNull String url) {
         activity_ = activity;
-        url_ = url;
-        alwaysFallbackToWebUrl_ = false;
-        addDownloadAppButton_ = false;
+        url_ = url.toLowerCase(); // Weired Android issue HTTP wont work
+        alwaysFallbackToPlayStore_ = false;
     }
 
 
@@ -41,15 +44,17 @@ public class AppConnector {
 
     /**
      * <p>
-     * Setting this option will open the app link web url always when there is no application installed.
-     * Otherwise the default behaviour is try to open the play store when there is no application installed.
+     * Setting this option will try to open the play store  when there is no application installed.
+     * The web url will be opened only if unable to open play store
      * </p>
      *
-     * @param alwaysFallbackToWebUrl true to enable always fallback to web url
+     * @param alwaysFallbackToPlayStore true to enable always fallback to Playstore
      * @return {@link AppConnector} instance for method chaining
      */
-    public AppConnector setAlwaysFallbackToWebUrl(boolean alwaysFallbackToWebUrl) {
-        alwaysFallbackToWebUrl_ = alwaysFallbackToWebUrl;
+    @SuppressWarnings("unused")
+    public AppConnector setAlwaysFallbackToPlayStore(boolean alwaysFallbackToPlayStore) {
+        isUserOverridingFallbackRule_ = true;
+        alwaysFallbackToPlayStore_ = alwaysFallbackToPlayStore;
         return this;
     }
 
@@ -60,6 +65,7 @@ public class AppConnector {
      * @param appConnectionEvents {@link io.branch.appconnector.AppConnector.IAppConnectionEvents} instance
      * @return {@link AppConnector} instance for method chaining
      */
+    @SuppressWarnings("unused")
     public AppConnector setAppConnectionEventsCallback(IAppConnectionEvents appConnectionEvents) {
         connectionEventsCallback_ = appConnectionEvents;
         return this;
@@ -71,6 +77,7 @@ public class AppConnector {
      * @param browserAgentString {@link String} a fully qualified browser agent string
      * @return {@link AppConnector} instance for method chaining
      */
+    @SuppressWarnings("unused")
     public AppConnector setBrowserAgent(String browserAgentString) {
         browserAgentString_ = browserAgentString;
         return this;
@@ -82,6 +89,7 @@ public class AppConnector {
      * Open the app if there is a matching app installed for the given url. Opens a fallback url if app is not installed.
      * </p>
      */
+    @SuppressWarnings("StatementWithEmptyBody")
     public void connect() {
         // 1. Try to open the app without scraping the app link tags in case of app links
         if (AppRouter.resolveUrlToAppWithoutPackageName(activity_, url_, connectionEventsCallback_)) {
@@ -110,7 +118,9 @@ public class AppConnector {
         @Override
         public void onAppLaunchConfigAvailable(final AppLaunchConfig appLaunchConfig, AppConnectionExtractor.CONN_EXTRACT_ERR err) {
             if (err == AppConnectionExtractor.CONN_EXTRACT_ERR.NO_ERROR) {
-                appLaunchConfig.setAlwaysOpenWebUrl(alwaysFallbackToWebUrl_);
+                if (isUserOverridingFallbackRule_) {
+                    appLaunchConfig.setAlwaysOpenPlayStore(alwaysFallbackToPlayStore_);
+                }
                 activity_.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -118,6 +128,21 @@ public class AppConnector {
                     }
                 });
 
+            } else {
+                if (appLaunchConfig != null && !TextUtils.isEmpty(appLaunchConfig.getTargetAppFallbackUrl())) {
+
+                    activity_.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                AppRouter.openFallbackUrl(activity_, appLaunchConfig, connectionEventsCallback_);
+                            } catch (UnsupportedEncodingException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
             }
         }
     }
@@ -163,6 +188,7 @@ public class AppConnector {
      * @param activity Activity to check if it is launched by app connector
      * @return A {@link Boolean} whose value is set to true if the activity specified is launched by AppConnector SDK
      */
+    @SuppressWarnings("unused")
     public static boolean isAppConnectorLaunched(Activity activity) {
         return (DeeplinkRouter.isActivityLaunchedByDeepLinkRouter(activity)
                 || DeeplinkRouter.isActivityLaunchedByAppConnector(activity));

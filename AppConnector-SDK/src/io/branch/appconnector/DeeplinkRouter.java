@@ -122,7 +122,7 @@ class DeeplinkRouter {
                             if (!TextUtils.isEmpty(fallbackUri)) {
                                 String fallbackUrlPattern = activityInfo.metaData.getString(WEB_AL_URL_KEY);
                                 if (!TextUtils.isEmpty(fallbackUrlPattern)) {
-                                    if (Matcher.matchUriPattern(fallbackUri, fallbackUrlPattern)) {
+                                    if (Matcher.checkUriMatchForPattern(fallbackUri, fallbackUrlPattern)) {
                                         fallBackUrlActivityMap_.put(activityInfo.name, fallbackUrlPattern);
                                     }
                                 }
@@ -130,7 +130,7 @@ class DeeplinkRouter {
                             // Check for a  potential URI path for any strong match
                             if (activityInfo.metaData.getString(ANDROID_AL_URL_KEY) != null) {
                                 String deeplinkUriPattern = activityInfo.metaData.getString(ANDROID_AL_URL_KEY);
-                                if (Matcher.matchUriPattern(launcherUriStr, deeplinkUriPattern)) {
+                                if (Matcher.checkUriMatchForPattern(launcherUriStr, deeplinkUriPattern)) {
                                     strongMatchFound = true;
                                     intent = Matcher.createTargetIntent(activity, activityInfo.name, launcherUriStr, deeplinkUriPattern);
                                     break;
