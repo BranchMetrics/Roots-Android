@@ -7,6 +7,14 @@ This is a repository of open source Roots App Linker Android SDK, and the inform
 This is the readme file of for open source Roots App Linker Android SDK. There's a full demo app embedded in this repository. Check out the project and run the `Roots-SDK-TestBed` for a demo.
 
 ## Installation
+#### Gradle
+Add the following dependency for your project.
+```Java
+dependencies {
+       compile 'io.branch.roots.sdk.android:library:0.1.+'
+}
+```
+#### Using local library
 1. Copy the Roots-SDK.aar from project root to your `project\libs\` folder
 2. Add the following to the “build.gradle” file
 
