@@ -1,8 +1,8 @@
-package io.branch.appconnectordeeplinktestbed;
+package io.branch.rootsroutingtestbed;
 
 import android.app.Application;
 
-import io.branch.appconnector.AppConnector;
+import io.branch.roots.AppConnector;
 
 /**
  * <p>

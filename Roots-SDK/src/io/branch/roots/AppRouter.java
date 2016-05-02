@@ -1,4 +1,4 @@
-package io.branch.appconnector;
+package io.branch.roots;
 
 import android.content.Context;
 import android.content.Intent;
@@ -163,7 +163,7 @@ class AppRouter {
      *
      * @param context  Application context
      * @param url      Url to resolve to installed app
-     * @param callback {@link io.branch.appconnector.AppConnector.IAppConnectionEvents} instance to callback resolve url status
+     * @param callback {@link io.branch.roots.AppConnector.IAppConnectionEvents} instance to callback resolve url status
      * @return {@link Boolean} with value true if url is resolved to an app.
      */
     public static boolean resolveUrlToAppWithoutPackageName(Context context, String url, AppConnector.IAppConnectionEvents callback) {

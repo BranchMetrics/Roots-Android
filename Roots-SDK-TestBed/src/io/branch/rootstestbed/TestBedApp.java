@@ -1,8 +1,8 @@
-package io.branch.appconnectortestbed;
+package io.branch.rootstestbed;
 
 import android.app.Application;
 
-import io.branch.appconnector.AppConnector;
+import io.branch.roots.AppConnector;
 
 /**
  * <p>

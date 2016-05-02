@@ -1,4 +1,4 @@
-package io.branch.appconnector;
+package io.branch.roots;
 
 import android.app.Activity;
 import android.app.Application;
@@ -59,10 +59,10 @@ public class AppConnector {
     }
 
     /**
-     * Sets an instance of {@link io.branch.appconnector.AppConnector.IAppConnectionEvents } to get called back with
+     * Sets an instance of {@link io.branch.roots.AppConnector.IAppConnectionEvents } to get called back with
      * App connect events
      *
-     * @param appConnectionEvents {@link io.branch.appconnector.AppConnector.IAppConnectionEvents} instance
+     * @param appConnectionEvents {@link io.branch.roots.AppConnector.IAppConnectionEvents} instance
      * @return {@link AppConnector} instance for method chaining
      */
     @SuppressWarnings("unused")

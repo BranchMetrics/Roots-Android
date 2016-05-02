@@ -1,4 +1,4 @@
-package io.branch.appconnector;
+package io.branch.roots;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -60,7 +60,7 @@ class AppConnectionExtractor {
      *
      * @param context  Application context
      * @param url      The Url to open the app
-     * @param callback A {@link io.branch.appconnector.AppConnectionExtractor.IAppConnectionExtractorEvents} object for result callback
+     * @param callback A {@link io.branch.roots.AppConnectionExtractor.IAppConnectionExtractorEvents} object for result callback
      */
     public static void scrapeAppLinkTags(final Context context, final String url, String browserAgentString, final IAppConnectionExtractorEvents callback) {
         new CaptureAppLaunchConfigTask(context, url, getUserAgentString(context, url, browserAgentString), callback).execute();
@@ -253,7 +253,7 @@ class AppConnectionExtractor {
          * Called when AppLaunch config is created for a given url
          *
          * @param appLaunchConfig {@link AppLaunchConfig} instance for teh given url
-         * @param err             {@link io.branch.appconnector.AppConnectionExtractor.CONN_EXTRACT_ERR} representing any error while creating app launch config
+         * @param err             {@link io.branch.roots.AppConnectionExtractor.CONN_EXTRACT_ERR} representing any error while creating app launch config
          */
         void onAppLaunchConfigAvailable(AppLaunchConfig appLaunchConfig, CONN_EXTRACT_ERR err);
     }

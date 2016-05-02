@@ -1,4 +1,4 @@
-package io.branch.appconnector;
+package io.branch.roots;
 
 import android.app.Activity;
 import android.content.Intent;

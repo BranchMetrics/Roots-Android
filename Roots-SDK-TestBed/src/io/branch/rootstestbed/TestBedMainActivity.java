@@ -1,4 +1,4 @@
-package io.branch.appconnectortestbed;
+package io.branch.rootstestbed;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import io.branch.appconnector.AppConnector;
+import io.branch.roots.AppConnector;
 
 /**
  * <p>
@@ -48,8 +48,8 @@ public class TestBedMainActivity extends Activity implements AppConnector.IAppCo
                         appConnector.debugConnect("https://my_awesome_site.com/user/my_user_id123456",
                                 new JSONArray("[{\"property\":\"al:android:url\"," +
                                         "\"content\":\"myscheme://mypath/user/my_user_id1234/my_username\"}," +
-                                        "{\"property\":\"al:android:package\",\"content\":\"io.branch.appconnectordeeplinktestbed\"}," +
-                                        "{\"property\":\"al:android:app_name\",\"content\":\"AppConnectorTestBed\"}]"));
+                                        "{\"property\":\"al:android:package\",\"content\":\"io.branch.rootsroutingtestbed\"}," +
+                                        "{\"property\":\"al:android:app_name\",\"content\":\"RootsTestBed\"}]"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

@@ -1,4 +1,4 @@
-package io.branch.appconnectordeeplinktestbed;
+package io.branch.rootsroutingtestbed;
 
 import android.app.Activity;
 import android.content.Intent;
