@@ -1,1 +1,1 @@
-include ':AppConnector-SDK', ':AppConnector-SDK-TestBed', ':AppConnectorDeeplink-TestBed'
+include ':Roots-SDK', ':Roots-SDK-TestBed', ':Roots-SDK-Routing-TestBed'
