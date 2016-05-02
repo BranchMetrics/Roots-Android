@@ -1,13 +1,13 @@
-# AppConnector Android SDK
+# Roots AppLinker Android SDK
 
-This is a repository of open source AppConnector Android SDK, and the information presented here serves as a reference manual for AppConnector SDK.
+This is a repository of open source Roots App Linker Android SDK, and the information presented here serves as a reference manual for  Roots App Linker SDK.
 
 ## Get the Demo App
 
-This is the readme file of for open source AppConnector Android SDK. There's a full demo app embedded in this repository. Check out the project and run the `AppConnector-SDK-TestBed` for a demo.
+This is the readme file of for open source Roots App Linker Android SDK. There's a full demo app embedded in this repository. Check out the project and run the `Roots-SDK-TestBed` for a demo.
 
 ## Installation
-1. Copy the AppConnector-SDK.aar from project root to your `project\libs\` folder
+1. Copy the Roots-SDK.aar from project root to your `project\libs\` folder
 2. Add the following to the “build.gradle” file
 
 ```java
@@ -17,7 +17,7 @@ repositories{
     }
  }
 dependencies {
-	compile(name:’AppConnector-SDK', ext:'aar’)
+	compile(name:’Roots-SDK', ext:'aar’)
 }
 ```
 
@@ -25,17 +25,17 @@ dependencies {
 Use the following api to connect to an applications using a url.
 
 ```java
-new AppConnector(context, url).connect();
+new Roots(context, url).connect();
 ```
 
 That's all sdk will take care of the rest. If any configured app installed it will be opened. It will fallback to the web URL if no app found. You can specify the fallback preference using `setAlwaysFallbackToWebUrl()` method.
-If you’d like to listen to routing lifecyle events, set the `AppConnectionEventsCallback` to listen to the app connection states as follows.
+If you’d like to listen to routing lifecyle events, set the `setRootsConnectionEventsCallback` to listen to the app connection states as follows.
 
 ```java
 
-    new AppConnector(context, url)
+    new Roots(context, url)
        .setAlwaysFallbackToWebUrl(true)
-       .setAppConnectionEventsCallback(new AppConnector.IAppConnectionEvents() {
+       .setRootsConnectionEventsCallback(new Roots.IRootsEvents() {
            @Override
            public void onAppLaunched(String appName, String packageName) {
            }
@@ -58,7 +58,7 @@ To setup in-app routing when the app is opened by Google or Facebook App Links f
 In your `Application` class `onCreate()` method
 
 ```java
-AppConnector.enableDeeplinkRouting(applicationInstance);
+Roots.enableDeeplinkRouting(applicationInstance);
 ```
 ##### Add Routing Filters
 The Activities for routing should specify an filter in the application manifest as a metadata for Activity
@@ -77,7 +77,7 @@ In the routing filter the wildcard fields are specified by `*` and the parameter
 
 ```java
 protected void onCreate(Bundle savedInstanceState) {
-    AppConnector.isAppConnectorLaunched(this){
+    Roots.isRootsLaunched(this){
        String userId = getIntent().getStringExtra("userID");
        String userName = getIntent().getStringExtra("name");
     }

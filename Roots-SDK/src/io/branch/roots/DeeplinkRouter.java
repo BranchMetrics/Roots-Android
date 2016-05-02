@@ -39,7 +39,7 @@ class DeeplinkRouter {
 
             @Override
             public void onActivityStarted(Activity activity) {
-                if (activityCnt_ == 0 && isActivityLaunchedByAppConnector(activity)) {
+                if (activityCnt_ == 0 && isActivityLaunchedByRoots(activity)) {
                     Intent intent = getAnyDeepLinkMatchIntent(activity);
                     if (intent != null) {
                         activity.startActivity(intent);
@@ -78,15 +78,15 @@ class DeeplinkRouter {
      * @param activity Activity launched
      * @return True if this activity is launched by App Connector SDK from some other application.
      */
-    public static boolean isActivityLaunchedByAppConnector(Activity activity) {
-        boolean isAppConnectorLaunch = false;
+    public static boolean isActivityLaunchedByRoots(Activity activity) {
+        boolean isRootsLaunch = false;
         if (activity != null && activity.getIntent() != null && activity.getIntent().getData() != null) {
             Uri data = activity.getIntent().getData();
             if (data.getQueryParameter(Defines.APP_CONNECTOR_LAUNCH_KEY) != null) {
-                isAppConnectorLaunch = Boolean.parseBoolean(data.getQueryParameter(Defines.APP_CONNECTOR_LAUNCH_KEY));
+                isRootsLaunch = Boolean.parseBoolean(data.getQueryParameter(Defines.APP_CONNECTOR_LAUNCH_KEY));
             }
         }
-        return isAppConnectorLaunch;
+        return isRootsLaunch;
     }
 
     /**
@@ -96,11 +96,11 @@ class DeeplinkRouter {
      * @return True if this activity is launched by App Connector SDK on finding a deep link path.
      */
     public static boolean isActivityLaunchedByDeepLinkRouter(Activity activity) {
-        boolean isAppConnectorDeeplinkLaunch = false;
+        boolean isRootsDeeplinkLaunch = false;
         if (activity != null && activity.getIntent() != null) {
-            isAppConnectorDeeplinkLaunch = activity.getIntent().getBooleanExtra(Defines.APP_CONNECTOR_DEEPLINK_LAUNCH_KEY, false);
+            isRootsDeeplinkLaunch = activity.getIntent().getBooleanExtra(Defines.APP_CONNECTOR_DEEPLINK_LAUNCH_KEY, false);
         }
-        return isAppConnectorDeeplinkLaunch;
+        return isRootsDeeplinkLaunch;
     }
 
     private Intent getAnyDeepLinkMatchIntent(Activity activity) {

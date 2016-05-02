@@ -2,7 +2,7 @@ package io.branch.rootsroutingtestbed;
 
 import android.app.Application;
 
-import io.branch.roots.AppConnector;
+import io.branch.roots.Roots;
 
 /**
  * <p>
@@ -14,6 +14,6 @@ public class DeepLinkTestApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        AppConnector.enableDeeplinkRouting(this);
+        Roots.enableDeeplinkRouting(this);
     }
 }

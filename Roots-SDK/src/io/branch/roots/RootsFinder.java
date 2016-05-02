@@ -27,7 +27,7 @@ import java.net.URLConnection;
  * Class for extracting the app connection params such as app links or other metadata for a given url.
  * </p>
  */
-class AppConnectionExtractor {
+class RootsFinder {
 
     public enum CONN_EXTRACT_ERR {
         NO_ERROR,
@@ -60,9 +60,9 @@ class AppConnectionExtractor {
      *
      * @param context  Application context
      * @param url      The Url to open the app
-     * @param callback A {@link io.branch.roots.AppConnectionExtractor.IAppConnectionExtractorEvents} object for result callback
+     * @param callback A {@link RootsFinder.IRootsConnectionExtractorEvents} object for result callback
      */
-    public static void scrapeAppLinkTags(final Context context, final String url, String browserAgentString, final IAppConnectionExtractorEvents callback) {
+    public static void scrapeAppLinkTags(final Context context, final String url, String browserAgentString, final IRootsConnectionExtractorEvents callback) {
         new CaptureAppLaunchConfigTask(context, url, getUserAgentString(context, url, browserAgentString), callback).execute();
     }
 
@@ -74,10 +74,10 @@ class AppConnectionExtractor {
     private static class CaptureAppLaunchConfigTask extends AsyncTask<Void, Void, URLContent> {
         private final Context context_;
         private final String browserAgentString_;
-        private final IAppConnectionExtractorEvents callback_;
+        private final IRootsConnectionExtractorEvents callback_;
         private final String actualUrl_;
 
-        public CaptureAppLaunchConfigTask(Context context, String actualUrl, String browserAgentString, IAppConnectionExtractorEvents callback) {
+        public CaptureAppLaunchConfigTask(Context context, String actualUrl, String browserAgentString, IRootsConnectionExtractorEvents callback) {
             context_ = context;
             browserAgentString_ = browserAgentString;
             callback_ = callback;
@@ -171,7 +171,7 @@ class AppConnectionExtractor {
     }
 
 
-    private static void captureAppLinkMetaData(Context context, URLContent content, String browserAgentString, final String actualUrl, final IAppConnectionExtractorEvents callback) {
+    private static void captureAppLinkMetaData(Context context, URLContent content, String browserAgentString, final String actualUrl, final IRootsConnectionExtractorEvents callback) {
         try {
             if (content != null && !TextUtils.isEmpty(content.getHtmlSource())) {
                 final WebView browser = new WebView(context);
@@ -248,12 +248,12 @@ class AppConnectionExtractor {
     }
 
 
-    public interface IAppConnectionExtractorEvents {
+    public interface IRootsConnectionExtractorEvents {
         /**
          * Called when AppLaunch config is created for a given url
          *
          * @param appLaunchConfig {@link AppLaunchConfig} instance for teh given url
-         * @param err             {@link io.branch.roots.AppConnectionExtractor.CONN_EXTRACT_ERR} representing any error while creating app launch config
+         * @param err             {@link RootsFinder.CONN_EXTRACT_ERR} representing any error while creating app launch config
          */
         void onAppLaunchConfigAvailable(AppLaunchConfig appLaunchConfig, CONN_EXTRACT_ERR err);
     }

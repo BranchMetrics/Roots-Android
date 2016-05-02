@@ -17,23 +17,23 @@ import java.io.UnsupportedEncodingException;
  * to handle custom metadata and referrer information.
  * </p>
  */
-public class AppConnector {
+public class Roots {
     /* URL set for opening the app */
     private final String url_;
     private final Activity activity_;
     private boolean alwaysFallbackToPlayStore_;
-    private IAppConnectionEvents connectionEventsCallback_;
+    private IRootsEvents connectionEventsCallback_;
     private String browserAgentString_ = null;
     private boolean isUserOverridingFallbackRule_;
 
     /**
      * <p>
-     * Create an instance of {@link AppConnector} to open the app
+     * Create an instance of {@link Roots} to open the app
      * </p>
      *
      * @param url {@link String} with value for the URL to open
      */
-    public AppConnector(@NonNull Activity activity, @NonNull String url) {
+    public Roots(@NonNull Activity activity, @NonNull String url) {
         activity_ = activity;
         url_ = url.toLowerCase(); // Weired Android issue HTTP wont work
         alwaysFallbackToPlayStore_ = false;
@@ -49,25 +49,25 @@ public class AppConnector {
      * </p>
      *
      * @param alwaysFallbackToPlayStore true to enable always fallback to Playstore
-     * @return {@link AppConnector} instance for method chaining
+     * @return {@link Roots} instance for method chaining
      */
     @SuppressWarnings("unused")
-    public AppConnector setAlwaysFallbackToPlayStore(boolean alwaysFallbackToPlayStore) {
+    public Roots setAlwaysFallbackToPlayStore(boolean alwaysFallbackToPlayStore) {
         isUserOverridingFallbackRule_ = true;
         alwaysFallbackToPlayStore_ = alwaysFallbackToPlayStore;
         return this;
     }
 
     /**
-     * Sets an instance of {@link io.branch.roots.AppConnector.IAppConnectionEvents } to get called back with
+     * Sets an instance of {@link Roots.IRootsEvents } to get called back with
      * App connect events
      *
-     * @param appConnectionEvents {@link io.branch.roots.AppConnector.IAppConnectionEvents} instance
-     * @return {@link AppConnector} instance for method chaining
+     * @param rootConnectionEvents {@link Roots.IRootsEvents} instance
+     * @return {@link Roots} instance for method chaining
      */
     @SuppressWarnings("unused")
-    public AppConnector setAppConnectionEventsCallback(IAppConnectionEvents appConnectionEvents) {
-        connectionEventsCallback_ = appConnectionEvents;
+    public Roots setRootsConnectionEventsCallback(IRootsEvents rootConnectionEvents) {
+        connectionEventsCallback_ = rootConnectionEvents;
         return this;
     }
 
@@ -75,10 +75,10 @@ public class AppConnector {
      * Sets an optional browser string to access and inspect the navigation url.
      *
      * @param browserAgentString {@link String} a fully qualified browser agent string
-     * @return {@link AppConnector} instance for method chaining
+     * @return {@link Roots} instance for method chaining
      */
     @SuppressWarnings("unused")
-    public AppConnector setBrowserAgent(String browserAgentString) {
+    public Roots setBrowserAgent(String browserAgentString) {
         browserAgentString_ = browserAgentString;
         return this;
     }
@@ -97,7 +97,7 @@ public class AppConnector {
         }
         // 2. If no app with matching app linked to the url scrape the Url for app link meta data
         else {
-            AppConnectionExtractor.scrapeAppLinkTags(activity_, url_, browserAgentString_, new AppConnExtractionEvents());
+            RootsFinder.scrapeAppLinkTags(activity_, url_, browserAgentString_, new RootsFinderEvents());
         }
     }
 
@@ -114,10 +114,10 @@ public class AppConnector {
         AppRouter.handleAppRouting(activity_, appLaunchConfig, connectionEventsCallback_);
     }
 
-    private class AppConnExtractionEvents implements AppConnectionExtractor.IAppConnectionExtractorEvents {
+    private class RootsFinderEvents implements RootsFinder.IRootsConnectionExtractorEvents {
         @Override
-        public void onAppLaunchConfigAvailable(final AppLaunchConfig appLaunchConfig, AppConnectionExtractor.CONN_EXTRACT_ERR err) {
-            if (err == AppConnectionExtractor.CONN_EXTRACT_ERR.NO_ERROR) {
+        public void onAppLaunchConfigAvailable(final AppLaunchConfig appLaunchConfig, RootsFinder.CONN_EXTRACT_ERR err) {
+            if (err == RootsFinder.CONN_EXTRACT_ERR.NO_ERROR) {
                 if (isUserOverridingFallbackRule_) {
                     appLaunchConfig.setAlwaysOpenPlayStore(alwaysFallbackToPlayStore_);
                 }
@@ -148,7 +148,7 @@ public class AppConnector {
     }
 
 
-    public interface IAppConnectionEvents {
+    public interface IRootsEvents {
         /**
          * <p>
          * Called when the connecting app is launched successfully
@@ -183,15 +183,15 @@ public class AppConnector {
     //---------------------- Receiver side functionalities-----------------------------------------------//
 
     /**
-     * Check if the activity is launched by AppConnector SDK
+     * Check if the activity is launched by Roots SDK
      *
      * @param activity Activity to check if it is launched by app connector
-     * @return A {@link Boolean} whose value is set to true if the activity specified is launched by AppConnector SDK
+     * @return A {@link Boolean} whose value is set to true if the activity specified is launched by Roots SDK
      */
     @SuppressWarnings("unused")
-    public static boolean isAppConnectorLaunched(Activity activity) {
+    public static boolean isRootsLaunched(Activity activity) {
         return (DeeplinkRouter.isActivityLaunchedByDeepLinkRouter(activity)
-                || DeeplinkRouter.isActivityLaunchedByAppConnector(activity));
+                || DeeplinkRouter.isActivityLaunchedByRoots(activity));
 
     }
 

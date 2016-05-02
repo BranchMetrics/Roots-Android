@@ -21,8 +21,7 @@ import java.util.List;
  */
 class AppRouter {
 
-
-    public static boolean handleAppRouting(Context context, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) {
+    public static boolean handleAppRouting(Context context, AppLaunchConfig appLaunchConfig, Roots.IRootsEvents callback) {
         boolean routingHandled = true;
         try {
             if (appLaunchConfig.isLaunchIntentAvailable()) {
@@ -30,6 +29,7 @@ class AppRouter {
                     // 1. Check if the actual url is a configured app link
                     if (launchOnAppLinkMatchingForUrl(context, appLaunchConfig.getActualUri(), appLaunchConfig, callback)) {
                         // Launched app with App link association for actual uri
+
                     }
                     // 2. Check if the target android uri is configured for app link
                     else if (launchOnAppLinkMatchingForUrl(context, appLaunchConfig.getTargetUri(), appLaunchConfig, callback)) {
@@ -57,7 +57,7 @@ class AppRouter {
     ////---------------------------- Private methods---------------------------------------------------------//
 
 
-    private static void openAppWithUriScheme(Context context, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) throws UnsupportedEncodingException {
+    private static void openAppWithUriScheme(Context context, AppLaunchConfig appLaunchConfig, Roots.IRootsEvents callback) throws UnsupportedEncodingException {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
         intent.setPackage(appLaunchConfig.getTargetAppPackageName());
@@ -90,7 +90,7 @@ class AppRouter {
         }
     }
 
-    private static void handleAppNotInstalled(Context context, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) throws UnsupportedEncodingException {
+    private static void handleAppNotInstalled(Context context, AppLaunchConfig appLaunchConfig, Roots.IRootsEvents callback) throws UnsupportedEncodingException {
         if (appLaunchConfig.isAlwaysOpenPlayStore()) {
             openPlayStore(context, appLaunchConfig, callback);
         } else {
@@ -98,7 +98,7 @@ class AppRouter {
         }
     }
 
-    private static void openPlayStore(Context context, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) {
+    private static void openPlayStore(Context context, AppLaunchConfig appLaunchConfig, Roots.IRootsEvents callback) {
         try {
             context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appLaunchConfig.getTargetAppPackageName())));
         } catch (android.content.ActivityNotFoundException ex) {
@@ -111,7 +111,7 @@ class AppRouter {
     }
 
 
-    public static void openFallbackUrl(final Context context, final AppLaunchConfig appLaunchConfig, final AppConnector.IAppConnectionEvents callback) throws UnsupportedEncodingException {
+    public static void openFallbackUrl(final Context context, final AppLaunchConfig appLaunchConfig, final Roots.IRootsEvents callback) throws UnsupportedEncodingException {
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(appLaunchConfig.getTargetAppFallbackUrl().toLowerCase()));
         context.startActivity(i);
@@ -130,10 +130,10 @@ class AppRouter {
      * @param appLaunchConfig AppLaunchConfig object
      * @return {@link Boolean} with value true if app is launched on finding an app link match
      */
-    private static boolean launchOnAppLinkMatchingForUrl(Context context, String url, AppLaunchConfig appLaunchConfig, AppConnector.IAppConnectionEvents callback) {
+    private static boolean launchOnAppLinkMatchingForUrl(Context context, String url, AppLaunchConfig appLaunchConfig, Roots.IRootsEvents callback) {
         boolean resolvedIntent = false;
         Uri uri = Uri.parse(url);
-        if (uri != null && uri.getScheme() != null) {
+        if (uri.getScheme() != null) {
             // Check if a possible App link. Android App link urls only support schemes https and http
             if ((uri.getScheme().equalsIgnoreCase("https") || uri.getScheme().equalsIgnoreCase("http"))
                     && !TextUtils.isEmpty(uri.getHost())) {
@@ -163,10 +163,10 @@ class AppRouter {
      *
      * @param context  Application context
      * @param url      Url to resolve to installed app
-     * @param callback {@link io.branch.roots.AppConnector.IAppConnectionEvents} instance to callback resolve url status
+     * @param callback {@link Roots.IRootsEvents} instance to callback resolve url status
      * @return {@link Boolean} with value true if url is resolved to an app.
      */
-    public static boolean resolveUrlToAppWithoutPackageName(Context context, String url, AppConnector.IAppConnectionEvents callback) {
+    public static boolean resolveUrlToAppWithoutPackageName(Context context, String url, Roots.IRootsEvents callback) {
         boolean isAppResolved = false;
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);

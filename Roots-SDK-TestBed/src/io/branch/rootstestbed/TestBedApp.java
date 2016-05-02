@@ -2,11 +2,11 @@ package io.branch.rootstestbed;
 
 import android.app.Application;
 
-import io.branch.roots.AppConnector;
+import io.branch.roots.Roots;
 
 /**
  * <p>
- * Application class for AppConnector Testbed.
+ * Application class for Roots Testbed.
  * </p>
  */
 public class TestBedApp extends Application {
@@ -15,6 +15,6 @@ public class TestBedApp extends Application {
     public void onCreate() {
         super.onCreate();
         // Enable Deep link routing to auto deep link to configured activities
-        AppConnector.enableDeeplinkRouting(this);
+        Roots.enableDeeplinkRouting(this);
     }
 }

@@ -11,16 +11,16 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import io.branch.roots.AppConnector;
+import io.branch.roots.Roots;
 
 /**
  * <p>
- * Class to demonstrate and test the AppConnector sdk. This app will open any app using the url
+ * Class to demonstrate and test the Roots sdk. This app will open any app using the url
  * provided if app is installed. Fall back to a play store or a website is app is not installed.
- * Also show how to debug AppConnector SDK with debug app link data
+ * Also show how to debug Roots SDK with debug app link data
  * </p>
  */
-public class TestBedMainActivity extends Activity implements AppConnector.IAppConnectionEvents {
+public class TestBedMainActivity extends Activity implements Roots.IRootsEvents {
     ProgressDialog progressDialog_;
     
     @Override
@@ -37,15 +37,15 @@ public class TestBedMainActivity extends Activity implements AppConnector.IAppCo
                 progressDialog_.setCancelable(true);
                 String navUrl = utlTxtView.getText().toString();
 
-                AppConnector appConnector = new AppConnector(TestBedMainActivity.this, navUrl)
-                        .setAppConnectionEventsCallback(TestBedMainActivity.this)
+                Roots roots = new Roots(TestBedMainActivity.this, navUrl)
+                        .setRootsConnectionEventsCallback(TestBedMainActivity.this)
                         .setAlwaysFallbackToPlayStore(((CheckBox) findViewById(R.id.web_fallback_chkbx)).isChecked());
 
                 if (URLUtil.isValidUrl(navUrl)) {
-                    appConnector.connect(); // Open the using the URL entered
-                } else {     // Set debug data to open appconnectordeeplinktestbed app
+                    roots.connect(); // Open the using the URL entered
+                } else {     // Set debug data to open RootsRoutingTestbed app
                     try {
-                        appConnector.debugConnect("https://my_awesome_site.com/user/my_user_id123456",
+                        roots.debugConnect("https://my_awesome_site.com/user/my_user_id123456",
                                 new JSONArray("[{\"property\":\"al:android:url\"," +
                                         "\"content\":\"myscheme://mypath/user/my_user_id1234/my_username\"}," +
                                         "{\"property\":\"al:android:package\",\"content\":\"io.branch.rootsroutingtestbed\"}," +

@@ -6,7 +6,7 @@ package io.branch.roots;
  * Class for representing content of a URL
  * </p>
  */
-public class URLContent {
+class URLContent {
 
     private final String contentType_;
     private final String contentEncoding_;
