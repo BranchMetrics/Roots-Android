@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Roots-SDK-TestBed</string>
+    <string name="navigate_btn_name">Navigate To App ></string>
+    <string name="navigate_url_hint">Enter URL to launch app</string>
+    <string name="fallback_playstore_button">Always fallback to PlayStore if not installed</string>
+    <string name="add_download_button">Add download app button on fallback url</string>
+
+</resources>
