@@ -11,7 +11,7 @@ This is the readme file of for open source Roots App Linker Android SDK. There's
 Add the following dependency for your project.
 ```Java
 dependencies {
-       compile 'io.branch.roots.sdk.android:library:0.1.+'
+       compile 'io.branch.roots.sdk.android:Roots:0.1.+'
 }
 ```
 #### Using local library
