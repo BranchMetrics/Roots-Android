@@ -25,7 +25,7 @@ public class Roots {
     private IRootsEvents connectionEventsCallback_;
     private String browserAgentString_ = null;
     private boolean isUserOverridingFallbackRule_;
-
+    
     /**
      * <p>
      * Create an instance of {@link Roots} to open the app
@@ -35,13 +35,16 @@ public class Roots {
      */
     public Roots(@NonNull Activity activity, @NonNull String url) {
         activity_ = activity;
-        url_ = url.toLowerCase(); // Weired Android issue HTTP wont work
+        // Weired Android issue HTTP wont work
+        url = url.replace("HTTPS://", "https://");
+        url = url.replace("HTTP://", "http://");
+        url_ = url;
         alwaysFallbackToPlayStore_ = false;
     }
-
-
+    
+    
     //-----------------Launcher side functionalities---------------------------------------------------//
-
+    
     /**
      * <p>
      * Setting this option will try to open the play store  when there is no application installed.
@@ -57,7 +60,7 @@ public class Roots {
         alwaysFallbackToPlayStore_ = alwaysFallbackToPlayStore;
         return this;
     }
-
+    
     /**
      * Sets an instance of {@link Roots.IRootsEvents } to get called back with
      * App connect events
@@ -70,7 +73,7 @@ public class Roots {
         connectionEventsCallback_ = rootConnectionEvents;
         return this;
     }
-
+    
     /**
      * Sets an optional browser string to access and inspect the navigation url.
      *
@@ -82,8 +85,8 @@ public class Roots {
         browserAgentString_ = browserAgentString;
         return this;
     }
-
-
+    
+    
     /**
      * <p>
      * Open the app if there is a matching app installed for the given url. Opens a fallback url if app is not installed.
@@ -100,7 +103,7 @@ public class Roots {
             RootsFinder.scrapeAppLinkTags(activity_, url_, browserAgentString_, new RootsFinderEvents());
         }
     }
-
+    
     /**
      * <p>
      * Method to debug app connector with debug app link data.
@@ -113,7 +116,7 @@ public class Roots {
         AppLaunchConfig appLaunchConfig = new AppLaunchConfig(applinkDebugMetadata, url);
         AppRouter.handleAppRouting(activity_, appLaunchConfig, connectionEventsCallback_);
     }
-
+    
     private class RootsFinderEvents implements RootsFinder.IRootsConnectionExtractorEvents {
         @Override
         public void onAppLaunchConfigAvailable(final AppLaunchConfig appLaunchConfig, RootsFinder.CONN_EXTRACT_ERR err) {
@@ -127,10 +130,10 @@ public class Roots {
                         AppRouter.handleAppRouting(activity_, appLaunchConfig, connectionEventsCallback_);
                     }
                 });
-
+                
             } else {
                 if (appLaunchConfig != null && !TextUtils.isEmpty(appLaunchConfig.getTargetAppFallbackUrl())) {
-
+                    
                     activity_.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -141,13 +144,13 @@ public class Roots {
                             }
                         }
                     });
-
+                    
                 }
             }
         }
     }
-
-
+    
+    
     public interface IRootsEvents {
         /**
          * <p>
@@ -158,7 +161,7 @@ public class Roots {
          * @param packageName {@link String} with value connection app package name
          */
         void onAppLaunched(String appName, String packageName);
-
+        
         /**
          * <p>
          * Called up on opening a fallback url when app is not installed on the device
@@ -167,7 +170,7 @@ public class Roots {
          * @param url {@link String} with value for the fallback url
          */
         void onFallbackUrlOpened(String url);
-
+        
         /**
          * <p>
          * Called  when user is navigated to the play store to download the app since the connecting app is not installed.
@@ -178,10 +181,10 @@ public class Roots {
          */
         void onPlayStoreOpened(String appName, String packageName);
     }
-
-
+    
+    
     //---------------------- Receiver side functionalities-----------------------------------------------//
-
+    
     /**
      * Check if the activity is launched by Roots SDK
      *
@@ -192,9 +195,9 @@ public class Roots {
     public static boolean isRootsLaunched(Activity activity) {
         return (DeeplinkRouter.isActivityLaunchedByDeepLinkRouter(activity)
                 || DeeplinkRouter.isActivityLaunchedByRoots(activity));
-
+        
     }
-
+    
     /**
      * Enables in app routing based on the app link filter added to activities. Should be called from application create event
      *
@@ -203,6 +206,6 @@ public class Roots {
     public static void enableDeeplinkRouting(Application application) {
         new DeeplinkRouter().enable(application);
     }
-
-
+    
+    
 }
