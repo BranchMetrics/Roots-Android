@@ -28,12 +28,12 @@ import java.net.URLConnection;
  * </p>
  */
 class RootsFinder {
-
+    
     public enum CONN_EXTRACT_ERR {
         NO_ERROR,
         ERR_UNKNOWN
     }
-
+    
     // Injecting Javascript to get the app links as JSONArray
     // Source :https://github.com/BoltsFramework/Bolts-Android/blob/master/bolts-applinks/src/main/java/bolts/WebViewAppLinkResolver.java#L52
     private static final String METADATA_READ_JAVASCRIPT = "javascript:window.HTMLOUT.showHTML" +
@@ -52,8 +52,8 @@ class RootsFinder {
             "  }" +
             "  return JSON.stringify(results);" +
             "})())";
-
-
+    
+    
     /**
      * Method for extracting the app link data for a  given url. App link data is scraped from the URL
      * and an {@link AppLaunchConfig} object is created and returned with the callback.
@@ -63,9 +63,21 @@ class RootsFinder {
      * @param callback A {@link RootsFinder.IRootsConnectionExtractorEvents} object for result callback
      */
     public static void scrapeAppLinkTags(final Context context, final String url, String browserAgentString, final IRootsConnectionExtractorEvents callback) {
-        new CaptureAppLaunchConfigTask(context, url, getUserAgentString(context, url, browserAgentString), callback).execute();
+        new CaptureAppLaunchConfigTask(context, url, getUserAgentString(context, url, browserAgentString, true), true, callback).execute();
     }
-
+    
+    
+    /**
+     * Registers a click on the given URl. This methods is simulate the link being opened in the browser
+     *
+     * @param context  Application context
+     * @param url      The Url to open the app
+     * @param callback A {@link RootsFinder.IRootsConnectionExtractorEvents} object for result callback
+     */
+    public static void registerClick(final Context context, final String url, String browserAgentString, final Roots.IRootsEvents callback) {
+        new CaptureAppLaunchConfigTask(context, url, getUserAgentString(context, url, browserAgentString, false), false, callback).execute();
+    }
+    
     /**
      * <p>
      * Background task for getting the {@link AppLaunchConfig} for the given url
@@ -74,29 +86,43 @@ class RootsFinder {
     private static class CaptureAppLaunchConfigTask extends AsyncTask<Void, Void, URLContent> {
         private final Context context_;
         private final String browserAgentString_;
-        private final IRootsConnectionExtractorEvents callback_;
+        private final Object callback_;
         private final String actualUrl_;
-
-        public CaptureAppLaunchConfigTask(Context context, String actualUrl, String browserAgentString, IRootsConnectionExtractorEvents callback) {
+        private final boolean extractAppLinkMetadata_;
+        
+        public CaptureAppLaunchConfigTask(Context context, String actualUrl, String browserAgentString, boolean extractAppLinkMetadata, Object callback) {
             context_ = context;
             browserAgentString_ = browserAgentString;
             callback_ = callback;
             actualUrl_ = actualUrl;
+            extractAppLinkMetadata_ = extractAppLinkMetadata;
         }
-
+        
         @Override
         protected URLContent doInBackground(Void... params) {
-            return getURLContent(actualUrl_, browserAgentString_);
+            if (extractAppLinkMetadata_) {
+                return getURLContent(actualUrl_, browserAgentString_);
+            } else {
+                simulateClick(actualUrl_, browserAgentString_);
+                return null;
+            }
         }
-
+        
         @Override
         protected void onPostExecute(URLContent urlContent) {
             super.onPostExecute(urlContent);
-            captureAppLinkMetaData(context_, urlContent, browserAgentString_, actualUrl_, callback_);
+            if (extractAppLinkMetadata_) {
+                IRootsConnectionExtractorEvents callback = callback_ instanceof IRootsConnectionExtractorEvents ? (IRootsConnectionExtractorEvents) callback_ : null;
+                captureAppLinkMetaData(context_, urlContent, browserAgentString_, actualUrl_, callback);
+            } else {
+                if (callback_ instanceof Roots.IRootsEvents) {
+                    ((Roots.IRootsEvents) callback_).onFallbackUrlOpened(actualUrl_);
+                }
+            }
         }
     }
-
-
+    
+    
     /**
      * <p>
      * Loads the url and check for any redirection. Extract the app link content form the final redirected
@@ -112,16 +138,16 @@ class RootsFinder {
         try {
             String finalDestinationURl = originUrl;
             URLConnection urlConnection = null;
-
+            
             while (!TextUtils.isEmpty(finalDestinationURl)) {
                 urlConnection = new URL(originUrl).openConnection();
                 urlConnection.setRequestProperty("Prefer-Html-Meta-Tags", "al");
                 urlConnection.addRequestProperty("User-Agent", userAgent);
-
+                
                 if (urlConnection instanceof HttpURLConnection) {
                     ((HttpURLConnection) urlConnection).setInstanceFollowRedirects(true);
                 }
-
+                
                 urlConnection.connect();
                 if (urlConnection instanceof HttpURLConnection) { //Http url connection is the base class for both http and https url connections
                     HttpURLConnection httpURLConnection = (HttpURLConnection) urlConnection;
@@ -142,7 +168,23 @@ class RootsFinder {
         }
         return urlContent;
     }
-
+    
+    private static void simulateClick(String originUrl, String userAgent) {
+        HttpURLConnection urlConnection = null;
+        HttpURLConnection.setFollowRedirects(true);
+        try {
+            String finalDestinationURl = originUrl;
+            urlConnection = (HttpURLConnection) new URL(finalDestinationURl).openConnection();
+            urlConnection.setRequestProperty("User-Agent", userAgent);
+            urlConnection.setInstanceFollowRedirects(true);
+            urlConnection.connect();
+            int responseCode = urlConnection.getResponseCode();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     /**
      * <p>
      * Get the Contents of a given URL connection
@@ -169,23 +211,23 @@ class RootsFinder {
         }
         return urlContent;
     }
-
-
+    
+    
     private static void captureAppLinkMetaData(Context context, URLContent content, String browserAgentString, final String actualUrl, final IRootsConnectionExtractorEvents callback) {
         try {
             if (content != null && !TextUtils.isEmpty(content.getHtmlSource())) {
                 final WebView browser = new WebView(context);
                 browser.setVisibility(View.GONE);
-
+                
                 browser.getSettings().setJavaScriptEnabled(true);
                 browser.getSettings().setBlockNetworkImage(true);
                 browser.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
                 browser.getSettings().setLoadsImagesAutomatically(false);
                 browser.getSettings().setAllowContentAccess(false);
                 browser.getSettings().setDomStorageEnabled(true);
-
+                
                 browser.getSettings().setUserAgentString(browserAgentString);
-
+                
                 browser.addJavascriptInterface(new Object() {
                     @SuppressWarnings("unused")
                     @JavascriptInterface
@@ -196,19 +238,19 @@ class RootsFinder {
                         }
                     }
                 }, "HTMLOUT");
-
+                
                 browser.setWebViewClient(new WebViewClient() {
                     @Override
                     public void onPageStarted(WebView view, String url, Bitmap favicon) {
                         super.onPageStarted(view, url, favicon);
                     }
-
+                    
                     @Override
                     public void onPageFinished(WebView view, String url) {
                         browser.loadUrl(METADATA_READ_JAVASCRIPT);
                     }
                 });
-
+                
                 browser.loadDataWithBaseURL(null, content.getHtmlSource(), content.getContentType(), content.getContentEncoding(), null);
             } else {
                 if (callback != null) {
@@ -221,22 +263,24 @@ class RootsFinder {
                 AppLaunchConfig appLaunchConfig = new AppLaunchConfig(null, actualUrl);
                 callback.onAppLaunchConfigAvailable(appLaunchConfig, CONN_EXTRACT_ERR.ERR_UNKNOWN);
             }
-
+            
         }
     }
-
-    private static String getUserAgentString(Context context, String url, String customUserAgentString) {
+    
+    private static String getUserAgentString(Context context, String url, String customUserAgentString, boolean filterBranchLinks) {
         // Check if the url is a Branch Url
         // AA: We're going to need to get rid of this code. You can update the backend to check for 'app connector'. It's fine to leave this for the time being though.
-        try {
-            Uri uri = Uri.parse(url);
-            if (uri.getHost().equalsIgnoreCase("bnc.lt")
-                    || uri.getHost().toLowerCase().endsWith(".app.link")) {
-                String packageName = context.getApplicationContext().getPackageName();
-                String sdkVersion = Defines.VERSION_NAME;
-                return "<" + packageName + " app connector " + sdkVersion + ">";
+        if (filterBranchLinks) {
+            try {
+                Uri uri = Uri.parse(url);
+                if (uri.getHost().equalsIgnoreCase("bnc.lt")
+                        || uri.getHost().toLowerCase().endsWith(".app.link")) {
+                    String packageName = context.getApplicationContext().getPackageName();
+                    String sdkVersion = Defines.VERSION_NAME;
+                    return "<" + packageName + " app connector " + sdkVersion + ">";
+                }
+            } catch (Exception ignore) {
             }
-        } catch (Exception ignore) {
         }
         WebView webView = new WebView(context);
         String uaString = customUserAgentString != null ? customUserAgentString : webView.getSettings().getUserAgentString();
@@ -244,10 +288,9 @@ class RootsFinder {
         String sdkVersion = Defines.VERSION_NAME;
         uaString = uaString + " " + packageName + " app connector " + sdkVersion;
         return uaString;
-
     }
-
-
+    
+    
     public interface IRootsConnectionExtractorEvents {
         /**
          * Called when AppLaunch config is created for a given url
@@ -257,6 +300,6 @@ class RootsFinder {
          */
         void onAppLaunchConfigAvailable(AppLaunchConfig appLaunchConfig, CONN_EXTRACT_ERR err);
     }
-
-
+    
+    
 }

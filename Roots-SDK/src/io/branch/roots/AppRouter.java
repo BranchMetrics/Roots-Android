@@ -113,7 +113,7 @@ class AppRouter {
 
     public static void openFallbackUrl(final Context context, final AppLaunchConfig appLaunchConfig, final Roots.IRootsEvents callback) throws UnsupportedEncodingException {
         Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(appLaunchConfig.getTargetAppFallbackUrl().toLowerCase()));
+        i.setData(Uri.parse(appLaunchConfig.getTargetAppFallbackUrl()));
         context.startActivity(i);
 
         if (callback != null) {

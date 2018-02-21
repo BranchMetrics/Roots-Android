@@ -2,12 +2,16 @@ package io.branch.roots;
 
 import android.app.Activity;
 import android.app.Application;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.Html;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by sojanpr on 4/5/16.
@@ -25,6 +29,8 @@ public class Roots {
     private IRootsEvents connectionEventsCallback_;
     private String browserAgentString_ = null;
     private boolean isUserOverridingFallbackRule_;
+    private final Map<String, String> additionalLinkData_;
+    private boolean registerLinkClickIfAppIsNotInstalled_;
     
     /**
      * <p>
@@ -39,6 +45,7 @@ public class Roots {
         url = url.replace("HTTPS://", "https://");
         url = url.replace("HTTP://", "http://");
         url_ = url;
+        additionalLinkData_ = new HashMap<>();
         alwaysFallbackToPlayStore_ = false;
     }
     
@@ -86,21 +93,48 @@ public class Roots {
         return this;
     }
     
+    /***
+     * Adds any additional data that need to be added to the link. These data will be added as query params.
+     * In case of Branch deep link / deferred deep link these params are provided as link data.
+     * @param key {@link String} Key for the additional link data
+     * @param value {@link String} value for additional link data
+     * @return {@link Roots} instance for method chaining
+     */
+    public Roots addAdditionalLinkData(String key, String value) {
+        additionalLinkData_.put(key, value);
+        return this;
+    }
+    
+    /**
+     * If called Roots will simulate a link open in the browser. Call this method in case  need to register a click especially if you need to get deferred link params while app is installed.
+     * Should be used  when deferred deep linking is preferred with out opening browser or play store app etc.
+     * Note: This will not open browser with fallback url
+     *
+     * @return {@link Roots} instance for method chaining
+     */
+    public Roots registerLinkClickIfAppIsNotInstalled() {
+        registerLinkClickIfAppIsNotInstalled_ = true;
+        return this;
+    }
     
     /**
      * <p>
-     * Open the app if there is a matching app installed for the given url. Opens a fallback url if app is not installed.
+     * Open the app if there is a matching app installed for the given url. Opens a fallback url or Simulate a link open in browser in case of app not installed depending on the settings.
+     * see {@link #registerLinkClickIfAppIsNotInstalled()} {@link #setAlwaysFallbackToPlayStore()}
      * </p>
      */
     @SuppressWarnings("StatementWithEmptyBody")
     public void connect() {
+        String modifiedUrl = getUrlWithAdditionalData(url_);
         // 1. Try to open the app without scraping the app link tags in case of app links
-        if (AppRouter.resolveUrlToAppWithoutPackageName(activity_, url_, connectionEventsCallback_)) {
+        if (AppRouter.resolveUrlToAppWithoutPackageName(activity_, modifiedUrl, connectionEventsCallback_)) {
             // Launched with app linked to url
-        }
-        // 2. If no app with matching app linked to the url scrape the Url for app link meta data
-        else {
-            RootsFinder.scrapeAppLinkTags(activity_, url_, browserAgentString_, new RootsFinderEvents());
+        } else if (registerLinkClickIfAppIsNotInstalled_) {
+            // 2. Register a click on actula link if opted
+            RootsFinder.registerClick(activity_, modifiedUrl, browserAgentString_, connectionEventsCallback_);
+        } else {
+            // 3. If no app with matching app linked to the url scrape the Url for app link meta data
+            RootsFinder.scrapeAppLinkTags(activity_, modifiedUrl, browserAgentString_, new RootsFinderEvents());
         }
     }
     
@@ -113,8 +147,22 @@ public class Roots {
      * @param applinkDebugMetadata {@link JSONArray} with debug app link metadata
      */
     public void debugConnect(String url, JSONArray applinkDebugMetadata) {
+        url = getUrlWithAdditionalData(url);
         AppLaunchConfig appLaunchConfig = new AppLaunchConfig(applinkDebugMetadata, url);
         AppRouter.handleAppRouting(activity_, appLaunchConfig, connectionEventsCallback_);
+    }
+    
+    private String getUrlWithAdditionalData(String url) {
+        String modifiedUrl = url;
+        try {
+            Uri.Builder builtUri = Uri.parse(url_).buildUpon();
+            for (String key : additionalLinkData_.keySet()) {
+                builtUri.appendQueryParameter(key, additionalLinkData_.get(key));
+            }
+            modifiedUrl = builtUri.build().toString();
+        } catch (Exception ignore) {
+        }
+        return modifiedUrl;
     }
     
     private class RootsFinderEvents implements RootsFinder.IRootsConnectionExtractorEvents {
